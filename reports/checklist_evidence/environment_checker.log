@@ -1,0 +1,9 @@
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1794151449.211460   13048 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1794151476.489419   13048 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+D:\Projects\Programming\AAST\Term7\selected_topics\proj_7th\_final_work\checklist_env\Lib\site-packages\gymnasium\utils\env_checker.py:496: UserWarning: WARN: Not able to test alternative render modes due to the environment not having a spec. Try instantiating the environment through `gymnasium.make`
+  logger.warn(
+3.14.6 | packaged by Anaconda, Inc. | (main, Jun 18 2026, 21:18:42) [MSC v.1942 64 bit (AMD64)] Windows-11-10.0.26300-SP0
+[('tensorflow', '2.22.0rc0'), ('keras-nightly', '3.16.0.dev2026110703'), ('shap', '0.54.1'), ('numpy', '2.5.4'), ('gymnasium', '1.4.0'), ('pytest', '9.1.1')]
+Gymnasium checker passed

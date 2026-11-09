@@ -1,0 +1,239 @@
+{
+  "checkpoint_path": "models/ddqn_tuned_seed0/best.pt",
+  "shap_configuration": {
+    "skip_shap": false,
+    "fallback_reason": null,
+    "shap_method_requested": "deep",
+    "shap_method_used": "deep"
+  },
+  "evaluation_design": {
+    "episodes_per_scenario_per_controller": 5,
+    "total_ddqn_episodes": 25,
+    "total_baseline_episodes": 25,
+    "total_evaluation_episodes": 50,
+    "scenarios_evaluated": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ]
+  },
+  "by_scenario": {
+    "normal_standard": {
+      "scenario_id": 1,
+      "ddqn": {
+        "mean_total_reward": -25.62576630733171,
+        "std_total_reward": 1.649680428995861,
+        "modeled_termination_avoidance_rate": 1.0,
+        "safety_threshold_violations": 0,
+        "tc_mean_abs_err": 0.24214840698242185,
+        "tc_time_in_comfort_band": 0.892,
+        "spo2_mean_band_err": 0.05882279968261719,
+        "spo2_time_in_comfort_band": 0.768,
+        "spo2_min_observed": 92.31108856201172,
+        "control_effort": 0.7553782051282052,
+        "heater_energy_kJ": 1095.93,
+        "mean_action_switches": 187.6,
+        "mean_recovery_steps_observed": null,
+        "episodes_with_observed_recovery": 0
+      },
+      "baseline": {
+        "mean_total_reward": -10.18427108361176,
+        "std_total_reward": 0.8100909323571959,
+        "modeled_termination_avoidance_rate": 1.0,
+        "safety_threshold_violations": 0,
+        "tc_mean_abs_err": 0.18429992675781248,
+        "tc_time_in_comfort_band": 1.0,
+        "spo2_mean_band_err": 0.0,
+        "spo2_time_in_comfort_band": 1.0,
+        "spo2_min_observed": 91.83558654785156,
+        "control_effort": 0.28049999999999997,
+        "heater_energy_kJ": 908.8199999999999,
+        "mean_action_switches": 114.4,
+        "mean_recovery_steps_observed": null,
+        "episodes_with_observed_recovery": 0
+      },
+      "ddqn_advantage_return": -15.441495223719949
+    },
+    "ambient_temperature_drop": {
+      "scenario_id": 2,
+      "ddqn": {
+        "mean_total_reward": -18.471860595840333,
+        "std_total_reward": 0.7526616322170775,
+        "modeled_termination_avoidance_rate": 1.0,
+        "safety_threshold_violations": 0,
+        "tc_mean_abs_err": 0.1828293800354004,
+        "tc_time_in_comfort_band": 0.96,
+        "spo2_mean_band_err": 0.04716365814208985,
+        "spo2_time_in_comfort_band": 0.8109999999999999,
+        "spo2_min_observed": 91.97698974609375,
+        "control_effort": 0.7879038461538462,
+        "heater_energy_kJ": 1282.23,
+        "mean_action_switches": 188.4,
+        "mean_recovery_steps_observed": null,
+        "episodes_with_observed_recovery": 0
+      },
+      "baseline": {
+        "mean_total_reward": -15.027337909339414,
+        "std_total_reward": 1.7518442039867632,
+        "modeled_termination_avoidance_rate": 1.0,
+        "safety_threshold_violations": 0,
+        "tc_mean_abs_err": 0.21212699890136716,
+        "tc_time_in_comfort_band": 0.962,
+        "spo2_mean_band_err": 0.0,
+        "spo2_time_in_comfort_band": 1.0,
+        "spo2_min_observed": 91.83601379394531,
+        "control_effort": 0.356,
+        "heater_energy_kJ": 1153.44,
+        "mean_action_switches": 129.6,
+        "mean_recovery_steps_observed": null,
+        "episodes_with_observed_recovery": 0
+      },
+      "ddqn_advantage_return": -3.4445226865009193
+    },
+    "porthole_opening_event": {
+      "scenario_id": 3,
+      "ddqn": {
+        "mean_total_reward": -16.61571016876178,
+        "std_total_reward": 0.9813789607681287,
+        "modeled_termination_avoidance_rate": 1.0,
+        "safety_threshold_violations": 0,
+        "tc_mean_abs_err": 0.19123653411865235,
+        "tc_time_in_comfort_band": 0.978,
+        "spo2_mean_band_err": 0.02545603942871094,
+        "spo2_time_in_comfort_band": 0.885,
+        "spo2_min_observed": 92.16654205322266,
+        "control_effort": 0.7284807692307693,
+        "heater_energy_kJ": 1154.25,
+        "mean_action_switches": 189.4,
+        "mean_recovery_steps_observed": 0.8,
+        "episodes_with_observed_recovery": 5
+      },
+      "baseline": {
+        "mean_total_reward": -11.754911131325308,
+        "std_total_reward": 0.49458771859932094,
+        "modeled_termination_avoidance_rate": 1.0,
+        "safety_threshold_violations": 0,
+        "tc_mean_abs_err": 0.19216049194335935,
+        "tc_time_in_comfort_band": 0.986,
+        "spo2_mean_band_err": 0.0,
+        "spo2_time_in_comfort_band": 1.0,
+        "spo2_min_observed": 91.82842254638672,
+        "control_effort": 0.31525,
+        "heater_energy_kJ": 1021.4100000000001,
+        "mean_action_switches": 109.6,
+        "mean_recovery_steps_observed": 0.0,
+        "episodes_with_observed_recovery": 5
+      },
+      "ddqn_advantage_return": -4.860799037436472
+    },
+    "initial_hypothermia": {
+      "scenario_id": 4,
+      "ddqn": {
+        "mean_total_reward": -16.865232972019072,
+        "std_total_reward": 0.5275619695219088,
+        "modeled_termination_avoidance_rate": 1.0,
+        "safety_threshold_violations": 0,
+        "tc_mean_abs_err": 0.1918849411010742,
+        "tc_time_in_comfort_band": 0.968,
+        "spo2_mean_band_err": 0.02576927947998047,
+        "spo2_time_in_comfort_band": 0.8790000000000001,
+        "spo2_min_observed": 90.85327911376953,
+        "control_effort": 0.702448717948718,
+        "heater_energy_kJ": 1002.78,
+        "mean_action_switches": 178.4,
+        "mean_recovery_steps_observed": 2.4,
+        "episodes_with_observed_recovery": 5
+      },
+      "baseline": {
+        "mean_total_reward": -11.294326707483503,
+        "std_total_reward": 0.6844333129955097,
+        "modeled_termination_avoidance_rate": 1.0,
+        "safety_threshold_violations": 0,
+        "tc_mean_abs_err": 0.18719599914550783,
+        "tc_time_in_comfort_band": 0.9880000000000001,
+        "spo2_mean_band_err": 0.0,
+        "spo2_time_in_comfort_band": 1.0,
+        "spo2_min_observed": 91.49169158935547,
+        "control_effort": 0.2904358974358975,
+        "heater_energy_kJ": 933.1200000000001,
+        "mean_action_switches": 118.8,
+        "mean_recovery_steps_observed": 2.0,
+        "episodes_with_observed_recovery": 5
+      },
+      "ddqn_advantage_return": -5.570906264535569
+    },
+    "oxygen_disturbance_desaturation": {
+      "scenario_id": 5,
+      "ddqn": {
+        "mean_total_reward": -25.707169190165455,
+        "std_total_reward": 1.4514150217756534,
+        "modeled_termination_avoidance_rate": 1.0,
+        "safety_threshold_violations": 0,
+        "tc_mean_abs_err": 0.17562445449829106,
+        "tc_time_in_comfort_band": 0.9880000000000001,
+        "spo2_mean_band_err": 0.11640991973876953,
+        "spo2_time_in_comfort_band": 0.7380000000000001,
+        "spo2_min_observed": 88.7763442993164,
+        "control_effort": 0.7695576923076923,
+        "heater_energy_kJ": 1024.65,
+        "mean_action_switches": 178.4,
+        "mean_recovery_steps_observed": 0.4,
+        "episodes_with_observed_recovery": 5
+      },
+      "baseline": {
+        "mean_total_reward": -66.15926479554639,
+        "std_total_reward": 0.888597242975923,
+        "modeled_termination_avoidance_rate": 1.0,
+        "safety_threshold_violations": 0,
+        "tc_mean_abs_err": 0.18156480026245117,
+        "tc_time_in_comfort_band": 1.0,
+        "spo2_mean_band_err": 0.32340506744384767,
+        "spo2_time_in_comfort_band": 0.7630000000000001,
+        "spo2_min_observed": 88.65760040283203,
+        "control_effort": 0.3464935897435898,
+        "heater_energy_kJ": 906.39,
+        "mean_action_switches": 128.2,
+        "mean_recovery_steps_observed": 0.0,
+        "episodes_with_observed_recovery": 5
+      },
+      "ddqn_advantage_return": 40.45209560538093
+    }
+  },
+  "overall": {
+    "ddqn": {
+      "mean_total_reward": -20.65714784682367,
+      "std_total_reward": 4.353781493253615,
+      "modeled_termination_avoidance_rate": 1.0,
+      "safety_threshold_violations": 0,
+      "tc_mean_abs_err": 0.19674474334716796,
+      "tc_time_in_comfort_band": 0.9571999999999998,
+      "spo2_mean_band_err": 0.05472433929443359,
+      "spo2_time_in_comfort_band": 0.8161999999999999,
+      "spo2_min_observed": 88.7763442993164,
+      "control_effort": 0.7487538461538463,
+      "heater_energy_kJ": 1111.968,
+      "mean_action_switches": 184.44,
+      "mean_recovery_steps_observed": 1.2,
+      "episodes_with_observed_recovery": 15
+    },
+    "baseline": {
+      "mean_total_reward": -22.884022325461277,
+      "std_total_reward": 22.164715973653422,
+      "modeled_termination_avoidance_rate": 1.0,
+      "safety_threshold_violations": 0,
+      "tc_mean_abs_err": 0.19146964340209963,
+      "tc_time_in_comfort_band": 0.9872,
+      "spo2_mean_band_err": 0.06468101348876953,
+      "spo2_time_in_comfort_band": 0.9526,
+      "spo2_min_observed": 88.65760040283203,
+      "control_effort": 0.3177358974358975,
+      "heater_energy_kJ": 984.6360000000001,
+      "mean_action_switches": 120.12,
+      "mean_recovery_steps_observed": 0.6666666666666666,
+      "episodes_with_observed_recovery": 15
+    },
+    "net_ddqn_improvement": 2.2268744786376082
+  }
+}

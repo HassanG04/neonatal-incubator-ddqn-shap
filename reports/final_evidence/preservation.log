@@ -1,0 +1,6 @@
+Default and explicit deep: all 14 files byte-identical.
+All legacy episode CSV columns and values reproduced, all 50 episodes. Same metrics across skip, deep and kernel.
+Member 02 independent evaluator and historical tuned evaluation: all 50 individual returns and switch counts match.
+Protected source/config/checkpoints/tests and original Member 1/2 experiment files byte-verified.
+Original Member 03 artifact archive verified: e25f18bb7624b1217e22686fb6c6cb97c5cb96f1312eb60160614f76cfccd1d9
+Checkpoint SHA-256: 823a2ca6988adbf7ddb4a303da82c1134bcff0d18ef8c59ac21f52cc375411ce

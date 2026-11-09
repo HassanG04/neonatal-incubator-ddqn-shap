@@ -1,0 +1,11 @@
+Inspect result written to file: D:\Projects\Programming\AAST\Term7\selected_topics\proj_7th\_final_work\checklist\candidate.pptx.inspect.ndjson
+file:///C:/Users/Hassan-PC/.codex/plugins/cache/openai-primary-runtime/presentations/26.1105.12137/skills/presentations/container_tools/artifact_tool_utils.mjs:371
+    throw new Error("Every source-required native-table owner must have exactly one validation policy");
+          ^
+
+Error: Every source-required native-table owner must have exactly one validation policy
+    at verifyRequiredNativeTableOwners (file:///C:/Users/Hassan-PC/.codex/plugins/cache/openai-primary-runtime/presentations/26.1105.12137/skills/presentations/container_tools/artifact_tool_utils.mjs:371:11)
+    at finalizePresentation (file:///C:/Users/Hassan-PC/.codex/plugins/cache/openai-primary-runtime/presentations/26.1105.12137/skills/presentations/container_tools/artifact_tool_utils.mjs:866:3)
+    at async file:///D:/Projects/Programming/AAST/Term7/selected_topics/proj_7th/_final_work/checklist/build.mjs:71:1
+
+Node.js v24.22.1

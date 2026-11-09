@@ -1,0 +1,777 @@
+--- incoming/shap_explainer.py
++++ submission/shap_explainer.py
+@@ -17,7 +17,7 @@
+ 3. Genuine simulation states extracted from verified rollouts for all local explanations
+    (waterfall, contrastive preference, and multi-scenario profiles).
+ 4. Automatic fallback from DeepExplainer to KernelExplainer with comprehensive logging.
+-5. Exact verification and documentation of Shapley efficiency residuals (< 1e-6).
++5. Numerical reconstruction checks for approximate feature attributions.
+ 
+ >>> SIMULATION-ONLY RESEARCH PROJECT - NOT FOR CLINICAL USE <<<
+ =============================================================================
+@@ -26,7 +26,10 @@
+ from __future__ import annotations
+ 
+ import argparse
++import hashlib
+ import json
++import zlib
++from pathlib import Path
+ import logging
+ import os
+ import sys
+@@ -64,10 +67,12 @@
+ from baseline import RuleBasedBaselineController
+ from ddqn_agent import DDQNAgent, select_device
+ from environment import ACTION_TABLE, NeonatalIncubatorEnv, OBS_NAMES, SCENARIO_NAMES
+-from rl_utils import AgentPolicy, BaselinePolicy, test_seed
++from rl_utils import AgentPolicy, BaselinePolicy, test_seed, set_global_seeds
+ 
+ 
+ logger = logging.getLogger("shap_explainer")
++# Coalition sampling logs one INFO message per internal operation. Keep warnings.
++logging.getLogger("shap").setLevel(logging.WARNING)
+ logging.basicConfig(level=logging.INFO, format="[%(levelname)s] %(message)s")
+ 
+ 
+@@ -79,6 +84,11 @@
+     dev_str = select_device(device)
+     agent = DDQNAgent.load(checkpoint_path, device=dev_str)
+ 
++    env = NeonatalIncubatorEnv()
++    if (agent.state_size, agent.action_size) != (len(OBS_NAMES), len(ACTION_TABLE)):
++        raise ValueError("Checkpoint dimensions differ from the Member 03 observation/action contract")
++    if agent.normalizer.names != list(OBS_NAMES) or env.action_table != ACTION_TABLE:
++        raise ValueError("Observation ordering or action table mismatch")
+     # Verification: Ensure weights are non-empty and forward pass is finite
+     dummy_obs = np.array([37.0, 36.5, 34.0, 21.0, 92.0, 25.0, 0.0, 0.0, 0.5, 0.0, 0.0], dtype=np.float32)
+     dummy_norm = agent.preprocess(dummy_obs)
+@@ -180,6 +190,7 @@
+     metadata = {
+         "total_samples": int(len(raw_states)),
+         "sampling_strategy": "deterministic_stratified_timeline",
++        "records": sample_records,
+         "random_seed": seed,
+         "scenarios_covered": list(stratified_steps.keys()),
+         "scenario_sample_counts": {
+@@ -226,72 +237,91 @@
+         self.explainer: Any = None
+         self.expected_values: np.ndarray = np.zeros(self.agent.action_size, dtype=np.float32)
+ 
++        if self.background_norm.ndim != 2 or self.background_norm.shape[1] != agent.state_size or not len(self.background_norm):
++            raise ValueError("Expected a nonempty normalized background matrix")
++        if not np.isfinite(self.background_norm).all() or self.method not in {"deep", "kernel"}:
++            raise ValueError("Invalid background or SHAP method")
++        self.fallback_reason = None
++        self._kernel_heads = {}
++        self._last_batch = None
+         self._initialize_explainer()
+ 
+-    def _initialize_explainer(self) -> None:
+-        """Initialize explainer with automatic fallback if DeepExplainer fails."""
++    def _initialize_explainer(self):
+         if self.requested_method == "deep":
+             try:
+-                logger.info("Initializing DeepExplainer on inner Keras sequential network...")
+-                self.explainer = shap.DeepExplainer(
+-                    self.agent.online.net, self.background_norm
+-                )
+-                raw_ev = self.explainer.expected_value
+-                if isinstance(raw_ev, (list, tuple)):
+-                    self.expected_values = np.array(
+-                        [float(x.numpy()) if hasattr(x, "numpy") else float(x) for x in raw_ev],
+-                        dtype=np.float32,
+-                    )
+-                elif hasattr(raw_ev, "numpy"):
+-                    self.expected_values = raw_ev.numpy().astype(np.float32)
+-                else:
+-                    self.expected_values = np.asarray(raw_ev, dtype=np.float32)
+-                self.method = "deep"
+-                self.explainer_used = "deep"
++                net = self.agent.online.net
++                model = tf.keras.Model(inputs=net.inputs, outputs=net.outputs[0])
++                self.explainer = shap.DeepExplainer(model, self.background_norm)
++                self._check_expected_values()
++                self.explain_norm_batch(self.background_norm[:1])
+                 return
+-            except Exception as err:
+-                logger.warning(
+-                    f"DeepExplainer failed with error: {err}. "
+-                    "Automatically falling back to KernelExplainer."
+-                )
+-
+-        # Fallback / explicit KernelExplainer
+-        logger.info("Initializing KernelExplainer (model-agnostic sampling fallback)...")
+-        def predict_fn(norm_x: np.ndarray) -> np.ndarray:
+-            return self.agent.q_values(norm_x)
+-
+-        bg_sub = self.background_norm[: min(25, len(self.background_norm))]
+-        self.explainer = shap.KernelExplainer(predict_fn, bg_sub)
++            except Exception as exc:
++                self.fallback_reason = f"{type(exc).__name__}: {exc}"
++                logger.warning("Deep SHAP preflight failed. Using Kernel SHAP: %s", self.fallback_reason)
++        self.method = self.explainer_used = "kernel"
++        self._last_batch = None
++        self.explainer = shap.KernelExplainer(self.agent.q_values, self.background_norm)
++        self._check_expected_values()
++
++    def _check_expected_values(self):
+         self.expected_values = np.asarray(self.explainer.expected_value, dtype=np.float32)
+-        self.method = "kernel"
+-        self.explainer_used = "kernel"
+-
+-    def explain_norm_batch(
+-        self, norm_batch: np.ndarray, nsamples: int = 100
+-    ) -> np.ndarray:
+-        """Compute SHAP values for a batch of normalized states.
+-
+-        Returns
+-        -------
+-        shap_values : np.ndarray, shape (N, 11, 25)
+-        """
+-        norm_batch = np.atleast_2d(np.asarray(norm_batch, dtype=np.float32))
+-
++        reference = self.agent.q_values(self.background_norm).mean(axis=0)
++        if self.expected_values.shape != (self.agent.action_size,) or not np.isfinite(self.expected_values).all():
++            raise ValueError("Invalid expected Q-values")
++        np.testing.assert_allclose(self.expected_values, reference, atol=1e-5, rtol=1e-5)
++
++    @staticmethod
++    def _kernel_values(engine, x, nsamples):
++        # KernelExplainer uses NumPy's legacy RNG for coalition draws. Tie the
++        # draws to the decision input so saving a plot cannot change its data.
++        state = np.random.get_state()
++        try:
++            np.random.seed(zlib.crc32(x.tobytes()))
++            return engine.shap_values(x, nsamples=nsamples, l1_reg=0, silent=True)
++        finally:
++            np.random.set_state(state)
++
++    def explain_norm_batch(self, norm_batch, nsamples=100):
++        """Return (observations, features, actions), checking additive reconstruction."""
++        x = np.atleast_2d(np.asarray(norm_batch, dtype=np.float32))
++        if x.ndim != 2 or x.shape[1] != self.agent.state_size or not np.isfinite(x).all():
++            raise ValueError("Expected finite normalized observations in checkpoint feature order")
++        key = (nsamples, x.shape, x.tobytes())
++        if self._last_batch is not None and self._last_batch[0] == key:
++            return self._last_batch[1]
+         if self.method == "deep":
+-            sv = self.explainer.shap_values(norm_batch)
+-            sv_arr = np.asarray(sv, dtype=np.float32)
+-            if sv_arr.ndim == 3 and sv_arr.shape[1] == len(OBS_NAMES) and sv_arr.shape[2] == self.agent.action_size:
+-                return sv_arr
+-            if sv_arr.ndim == 3 and sv_arr.shape[0] == len(OBS_NAMES):
+-                return np.transpose(sv_arr, (1, 0, 2))
+-            if isinstance(sv, list) and len(sv) == self.agent.action_size:
+-                return np.stack(sv, axis=-1)
+-            return sv_arr
++            raw = self.explainer.shap_values(x)
+         else:
+-            sv = self.explainer.shap_values(norm_batch, nsamples=nsamples)
+-            if isinstance(sv, list):
+-                return np.stack(sv, axis=-1)
+-            return np.asarray(sv, dtype=np.float32)
++            raw = np.concatenate([self._kernel_values(self.explainer, row[None], nsamples) for row in x])
++        values = np.asarray(np.stack(raw, axis=-1) if isinstance(raw, list) else raw, dtype=np.float32)
++        if values.shape != (len(x), self.agent.state_size, self.agent.action_size):
++            raise ValueError(f"Unexpected SHAP axes: {values.shape}")
++        np.testing.assert_allclose(values.sum(axis=1) + self.expected_values,
++                                   self.agent.q_values(x), atol=1e-4, rtol=0)
++        self._last_batch = (key, values)
++        return values
++
++    def decision_values(self, norm, action, q):
++        """Explain just the executed head; check the head index and its reconstruction."""
++        x = norm[None]
++        if self.method == "deep":
++            # SHAP's built-in ranked-output check indexes unranked heads. Apply
++            # the same efficiency test below against the actual selected Q.
++            values, ranks = self.explainer.shap_values(x, ranked_outputs=1, check_additivity=False)
++            if int(ranks[0, 0]) == action:
++                phi = np.asarray(values[0, :, 0], dtype=np.float32)
++            else:
++                phi = self.explain_norm_batch(x)[0, :, action]
++        else:
++            if action not in self._kernel_heads:
++                self._kernel_heads[action] = shap.KernelExplainer(
++                    lambda batch: self.agent.q_values(batch)[:, action], self.background_norm)
++            phi = np.asarray(self._kernel_values(self._kernel_heads[action], x, 100)[0], dtype=np.float32)
++        base = float(self.expected_values[action])
++        residual = abs(float(q) - (base + float(phi.sum())))
++        if phi.shape != (self.agent.state_size,) or not np.isfinite(residual) or residual > 1e-4:
++            raise ValueError(f"Invalid attributions for action {action}: residual {residual}")
++        return base, phi, residual
+ 
+     def explain_state(
+         self, raw_obs: np.ndarray, action_idx: Optional[int] = None
+@@ -303,6 +333,8 @@
+         greedy_act = int(np.argmax(q_vals))
+ 
+         target_act = greedy_act if action_idx is None else int(action_idx)
++        if not 0 <= target_act < self.agent.action_size:
++            raise ValueError(f"Invalid action index {target_act}")
+         sv = self.explain_norm_batch(norm_obs[np.newaxis, :])  # (1, 11, 25)
+         act_sv = sv[0, :, target_act]
+         base_val = float(self.expected_values[target_act])
+@@ -423,8 +455,8 @@
+ 
+         fig, ax = plt.subplots(figsize=(9.5, 5.5), dpi=300)
+         bars = ax.barh(sorted_features, sorted_vals, color="#2b5c8f", edgecolor="#142c44", height=0.65)
+-        ax.set_xlabel("Mean Absolute SHAP Value (Impact on Q-value magnitude)", fontsize=11, fontweight="semibold")
+-        ax.set_ylabel("State Observation Features", fontsize=11, fontweight="semibold")
++        ax.set_xlabel("Mean Absolute SHAP Value (Impact on Q-value magnitude)", fontsize=11, fontweight="bold")
++        ax.set_ylabel("State Observation Features", fontsize=11, fontweight="bold")
+ 
+         act_meta = ACTION_TABLE[action_idx]
+         default_title = (
+@@ -435,6 +467,7 @@
+         ax.set_title(title or default_title, fontsize=11, fontweight="bold", pad=12)
+         ax.grid(axis="x", linestyle="--", alpha=0.5)
+ 
++        ax.margins(x=0.18)
+         for bar in bars:
+             w = bar.get_width()
+             ax.text(w + 0.003 * max(sorted_vals), bar.get_y() + bar.get_height() / 2,
+@@ -460,8 +493,8 @@
+ 
+         fig, ax = plt.subplots(figsize=(9.5, 5.5), dpi=300)
+         bars = ax.barh(sorted_features, sorted_vals, color="#1f77b4", edgecolor="#0b3c66", height=0.65)
+-        ax.set_xlabel("Policy-Level Mean Absolute SHAP Value (Evaluated on Greedy Actions)", fontsize=11, fontweight="semibold")
+-        ax.set_ylabel("State Observation Features", fontsize=11, fontweight="semibold")
++        ax.set_xlabel("Policy-Level Mean Absolute SHAP Value (Evaluated on Greedy Actions)", fontsize=11, fontweight="bold")
++        ax.set_ylabel("State Observation Features", fontsize=11, fontweight="bold")
+ 
+         default_title = (
+             "Policy-Level Global Feature Importance\n"
+@@ -470,6 +503,7 @@
+         ax.set_title(title or default_title, fontsize=11, fontweight="bold", pad=12)
+         ax.grid(axis="x", linestyle="--", alpha=0.5)
+ 
++        ax.margins(x=0.18)
+         for bar in bars:
+             w = bar.get_width()
+             ax.text(w + 0.003 * max(sorted_vals), bar.get_y() + bar.get_height() / 2,
+@@ -507,8 +541,8 @@
+             f"Heater: {act_meta['heater_level']:.2f} ({act_meta['Q_heater_W']:.0f}W), "
+             f"FiO2: {act_meta['fio2_command']:.2f}]"
+         )
+-        plt.title(title or default_title, fontsize=11, fontweight="bold", pad=14)
+-        plt.tight_layout()
++        plt.gcf().suptitle(title or default_title, fontsize=11, fontweight="bold", y=1.06)
++        plt.subplots_adjust(top=0.88)
+         plt.savefig(output_path, dpi=300, bbox_inches="tight")
+         plt.close("all")
+ 
+@@ -540,9 +574,9 @@
+             f"Delta SHAP Value [ phi_j(Action {action_winner}) - phi_j(Action {action_loser}) ]\n"
+             f"(Green: Feature favors chosen Action {action_winner}; Red: Feature favors competing Action {action_loser})",
+             fontsize=10,
+-            fontweight="semibold",
++            fontweight="bold",
+         )
+-        ax.set_ylabel("State Observation Features", fontsize=11, fontweight="semibold")
++        ax.set_ylabel("State Observation Features", fontsize=11, fontweight="bold")
+ 
+         w_meta = contrast["action_a_meta"]
+         l_meta = contrast["action_b_meta"]
+@@ -555,6 +589,7 @@
+         ax.set_title(title or default_title, fontsize=11, fontweight="bold", pad=12)
+         ax.grid(axis="x", linestyle=":", alpha=0.6)
+ 
++        ax.margins(x=0.18)
+         for bar in bars:
+             w = bar.get_width()
+             offset = 0.002 * (max(sorted_deltas) - min(sorted_deltas))
+@@ -603,15 +638,15 @@
+ 
+         ax.axhline(0, color="black", linestyle="-", linewidth=0.8)
+         ax.set_xticks(x)
+-        ax.set_xticklabels(features, rotation=35, ha="right", fontsize=10, fontweight="semibold")
+-        ax.set_ylabel("SHAP Attribution phi_j to Chosen Q(s, a*)", fontsize=11, fontweight="semibold")
++        ax.set_xticklabels(features, rotation=35, ha="right", fontsize=10, fontweight="bold")
++        ax.set_ylabel("SHAP Attribution phi_j to Chosen Q(s, a*)", fontsize=11, fontweight="bold")
+         ax.set_title(
+-            title or "SHAP Attribution Profiles Across Real Clinical Simulation States",
++            title or "SHAP Attribution Profiles Across Four Simulated Decisions",
+             fontsize=12,
+             fontweight="bold",
+             pad=14,
+         )
+-        ax.legend(loc="upper right", frameon=True, fontsize=9.5)
++        ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.20), ncol=2, frameon=False, fontsize=9.5)
+         ax.grid(axis="y", linestyle="--", alpha=0.5)
+ 
+         plt.tight_layout()
+@@ -639,7 +674,9 @@
+ 
+         for s in range(step_idx):
+             a = pol.act(obs)
+-            obs, r, term, trunc, info = env.step(a)
++            obs, _, term, trunc, _ = env.step(a)
++            if term or trunc:
++                raise ValueError(f"Scenario {scn} ended before decision {step_idx}")
+ 
+         norm_s = agent.preprocess(obs)
+         q_vals = agent.q_values(norm_s)[0]
+@@ -658,20 +695,25 @@
+     return extracted
+ 
+ 
++def prepare_explanation(checkpoint, device, seed, method):
++    agent = load_trained_agent(checkpoint, device)
++    raw, norm, metadata = collect_background_dataset(seed=seed, agent=agent)
++    return agent, raw, norm, metadata, DDQNShapExplainer(agent, norm, method)
++
++
+ def run_shap_analysis(
+     checkpoint_path: str = "models/ddqn_tuned_seed0/best.pt",
+     output_dir: str = "outputs/member03/shap",
+     method: str = "deep",
+     device: str = "cpu",
+     seed: int = 42,
++    context=None,
+ ) -> Dict[str, Any]:
+     """Execute complete SHAP explainability workflow and export all artifacts."""
+     os.makedirs(output_dir, exist_ok=True)
+-    logger.info(f"Loading trained DDQNAgent from: {checkpoint_path}")
+-    agent = load_trained_agent(checkpoint_path, device=device)
+-
+-    logger.info("Collecting deterministic, stratified background dataset across 200-step timeline...")
+-    raw_bg, norm_bg, bg_meta = collect_background_dataset(seed=seed, agent=agent)
++    set_global_seeds(seed)
++    agent, raw_bg, norm_bg, bg_meta, explainer = context or prepare_explanation(
++        checkpoint_path, device, seed, method)
+     logger.info(
+         f"Background dataset collected: {norm_bg.shape} ({len(raw_bg)} states). "
+         f"Disturbance counts: {bg_meta['disturbance_counts']}"
+@@ -682,8 +724,7 @@
+     with open(bg_meta_path, "w", encoding="utf-8") as fh:
+         json.dump(bg_meta, fh, indent=2)
+ 
+-    logger.info(f"Initializing DDQNShapExplainer (requested method='{method}')...")
+-    explainer = DDQNShapExplainer(agent=agent, background_norm=norm_bg, method=method)
++    logger.info("Plotting with %s SHAP (requested %s)", explainer.method, method)
+ 
+     # Extract genuine simulation states for all local explanations
+     logger.info("Extracting genuine simulation states from actual episode rollouts...")
+@@ -693,6 +734,8 @@
+     nominal_data = real_states["Normal Condition (Scn 1, Step 50)"]
+     chosen_act = nominal_data["chosen_action"]
+ 
++    global_sv = explainer.explain_norm_batch(norm_bg)
++    greedy = [int(np.argmax(agent.q_values(row)[0])) for row in norm_bg]
+     summary_png = os.path.join(output_dir, "shap_summary.png")
+     logger.info(f"Generating summary beeswarm plot -> {summary_png}")
+     explainer.plot_summary_beeswarm(
+@@ -700,7 +743,7 @@
+         action_idx=chosen_act,
+         output_path=summary_png,
+         raw_states=raw_bg,
+-        title=f"SHAP Summary (Beeswarm) -- Real Nominal State: Action {chosen_act} (Heater={nominal_data['action_meta']['heater_level']}, FiO2={nominal_data['action_meta']['fio2_command']})",
++        title=f"SHAP on 100 sampled states -- nominal decision head {chosen_act} (Heater={nominal_data['action_meta']['heater_level']}, FiO2={nominal_data['action_meta']['fio2_command']})",
+     )
+ 
+     # 2. Action-specific feature importance bar plot (Action 22)
+@@ -711,7 +754,7 @@
+         norm_states=norm_bg,
+         action_idx=22,
+         output_path=feat_imp_png,
+-        title="Action-Specific Feature Importance -- Action 22 [Heater: 1.00 (360W), FiO2: 0.40]",
++        title=None,
+     )
+ 
+     # 2b. Policy-Level feature importance bar plot (aggregating greedy actions across background states)
+@@ -754,7 +797,7 @@
+         output_path=contrast_png,
+         title=(
+             f"Contrastive Attribution at Oxygen Desaturation Peak (Scn 5, Step 90)\n"
+-            f"Chosen Act {act_winner} (FiO2=0.60) vs Baseline Act {act_comp} (FiO2=0.21, Room Air) | "
++            f"Chosen Act {act_winner} (FiO2={ACTION_TABLE[act_winner]['fio2_command']:.2f}) vs comparator {act_comp} (FiO2=0.21, Room Air) | "
+             f"Delta Q = {contrast_res['delta_q']:+.4f}"
+         ),
+     )
+@@ -775,7 +818,7 @@
+     # Build comprehensive manifest storing all local explanations and numerical metadata
+     manifest_explanations = {}
+     for label, data in real_states.items():
+-        exp = explainer.explain_state(data["raw_obs"], action_idx=data["chosen_action"])
++        exp = scenarios_dict[label]
+         manifest_explanations[label] = {
+             "scenario": data["scenario"],
+             "step": data["step"],
+@@ -791,6 +834,12 @@
+ 
+     manifest = {
+         "checkpoint_path": checkpoint_path,
++        "checkpoint_sha256": hashlib.sha256(Path(checkpoint_path).read_bytes()).hexdigest(),
++        "feature_names": list(OBS_NAMES),
++        "fallback_reason": explainer.fallback_reason,
++        "expected_values": explainer.expected_values.tolist(),
++        "global_plot_data": {"array_file": "global_attributions.npz", "summary_action": int(chosen_act),
++                             "shape": list(global_sv.shape), "axes": ["state", "feature", "action"]},
+         "explainer_requested": method,
+         "explainer_used": explainer.explainer_used,
+         "device": device,
+@@ -836,6 +885,9 @@
+         "local_explanations": manifest_explanations,
+     }
+ 
++    np.savez_compressed(os.path.join(output_dir, "global_attributions.npz"), raw=raw_bg,
++                        normalized=norm_bg, phi=global_sv, greedy_actions=greedy,
++                        q=agent.q_values(norm_bg))
+     manifest_path = os.path.join(output_dir, "shap_manifest.json")
+     with open(manifest_path, "w", encoding="utf-8") as fh:
+         json.dump(manifest, fh, indent=2)
+@@ -891,3 +943,4 @@
+         device=args.device,
+         seed=args.seed,
+     )
++
+--- incoming/validation.py
++++ submission/validation.py
+@@ -67,7 +67,7 @@
+ )
+ from shap_explainer import (
+     DDQNShapExplainer,
+-    collect_background_dataset,
++    prepare_explanation,
+     load_trained_agent,
+ )
+ 
+@@ -88,8 +88,8 @@
+       1. Decision state s_t is observed.
+       2. Policy selects action a_t based on s_t.
+       3. Q-values and SHAP values are evaluated at s_t for a_t.
+-      4. Environment executes a_t, returning r_t, s_{t+1}, and flags.
+-      5. The complete aligned transition (s_t, a_t, Q(s_t), phi(s_t, a_t), r_t, s_{t+1}) is stored.
++      4. Environment executes a_t, returning r_{t+1}, s_{t+1}, and flags.
++      5. The complete aligned transition (s_t, a_t, Q(s_t), phi(s_t, a_t), r_{t+1}, s_{t+1}) is stored.
+ 
+     Parameters
+     ----------
+@@ -107,7 +107,7 @@
+     obs, info = env.reset(seed=int(seed))
+     policy.reset(env)
+ 
+-    explain_set = set(explain_steps or [])
++    explain_set = None if explain_steps is None else set(explain_steps)
+     rows: List[Dict[str, Any]] = []
+     terminated = truncated = False
+     step = 0
+@@ -131,25 +131,13 @@
+ 
+         # 4. Evaluate SHAP attributions at decision_state if requested
+         shap_info: Dict[str, Any] = {}
+-        if explainer is not None and isinstance(policy, AgentPolicy) and step in explain_set:
+-            try:
+-                exp_dict = explainer.explain_state(decision_state, action_idx=action)
+-                top_feat_idx = np.argsort(np.abs(exp_dict["shap_values"]))[::-1]
+-                shap_info = {
+-                    "shap_base_val": float(exp_dict["base_value"]),
+-                    "shap_efficiency_error": float(exp_dict["efficiency_error"]),
+-                    "shap_top1_feature": OBS_NAMES[top_feat_idx[0]],
+-                    "shap_top1_val": float(exp_dict["shap_values"][top_feat_idx[0]]),
+-                    "shap_top2_feature": OBS_NAMES[top_feat_idx[1]],
+-                    "shap_top2_val": float(exp_dict["shap_values"][top_feat_idx[1]]),
+-                    "shap_top3_feature": OBS_NAMES[top_feat_idx[2]],
+-                    "shap_top3_val": float(exp_dict["shap_values"][top_feat_idx[2]]),
+-                }
+-                # Store all 11 SHAP attributions for this decision
+-                for i, feat_name in enumerate(OBS_NAMES):
+-                    shap_info[f"shap_{feat_name}"] = float(exp_dict["shap_values"][i])
+-            except Exception as err:
+-                shap_info = {"shap_error": str(err)}
++        if explainer is not None and decision_q_values is not None and (explain_set is None or step in explain_set):
++            base, phi, residual = explainer.decision_values(norm_s, action, decision_q_values[action])
++            shap_info = {"shap_base_val": base, "shap_efficiency_error": residual}
++            for rank, idx in enumerate(np.argsort(np.abs(phi))[::-1][:3], start=1):
++                shap_info[f"shap_top{rank}_feature"] = OBS_NAMES[idx]
++                shap_info[f"shap_top{rank}_val"] = float(phi[idx])
++            shap_info.update({f"shap_{name}": float(value) for name, value in zip(OBS_NAMES, phi)})
+ 
+         # 5. Environment step execution: yields next state, reward, and flags
+         next_obs, reward, terminated, truncated, step_info = env.step(action)
+@@ -172,6 +160,9 @@
+         )
+         rows.append(row)
+         obs = next_obs
++
++    for row in rows:
++        row["seed"] = int(seed)
+ 
+     # Calculate summary metrics using rl_utils
+     metrics = episode_metrics(rows, env)
+@@ -242,7 +233,7 @@
+     rec["Tamb"] = float(obs[5])
+     rec["tc_err"] = abs(float(obs[0]) - env.tc_setpoint)
+     rec["tc_in_comfort"] = 36.5 <= float(obs[0]) <= 37.5
+-    rec["tc_in_safe"] = 35.5 <= float(obs[0]) <= 38.0
++    rec["tc_in_safe"] = env.tc_safe_low <= float(obs[0]) <= env.tc_safe_high
+     rec["spo2_in_comfort"] = env.spo2_target_low <= float(obs[4]) <= env.spo2_target_high
+     rec["spo2_in_safe"] = env.spo2_safe_low <= float(obs[4]) <= env.spo2_safe_high
+ 
+@@ -282,8 +273,8 @@
+         rec[f"decision_obs_{name}"] = float(decision_state[idx])
+ 
+     # 2. Store actuator parameters for selected_action
+-    if 0 <= selected_action < len(ACTION_TABLE):
+-        act_meta = ACTION_TABLE[selected_action]
++    if 0 <= selected_action < len(env.action_table):
++        act_meta = env.action_table[selected_action]
+         rec["heater_idx"] = act_meta["heater_idx"]
+         rec["o2_idx"] = act_meta["o2_idx"]
+         rec["heater_level"] = act_meta["heater_level"]
+@@ -334,7 +325,7 @@
+     rec["Tamb"] = float(next_state[5])
+     rec["tc_err"] = abs(float(next_state[0]) - env.tc_setpoint)
+     rec["tc_in_comfort"] = 36.5 <= float(next_state[0]) <= 37.5
+-    rec["tc_in_safe"] = 35.5 <= float(next_state[0]) <= 38.0
++    rec["tc_in_safe"] = env.tc_safe_low <= float(next_state[0]) <= env.tc_safe_high
+     rec["spo2_in_comfort"] = env.spo2_target_low <= float(next_state[4]) <= env.spo2_target_high
+     rec["spo2_in_safe"] = env.spo2_safe_low <= float(next_state[4]) <= env.spo2_safe_high
+ 
+@@ -344,6 +335,26 @@
+             rec[k] = step_info[k]
+ 
+     return rec
++
++
++def summarize_episodes(frame):
++    recovery = frame.recovery_steps.dropna()
++    return {
++        "mean_total_reward": float(frame.total_reward.mean()),
++        "std_total_reward": float(frame.total_reward.std()) if len(frame) > 1 else None,
++        "modeled_termination_avoidance_rate": float(frame.survived.mean()),
++        "safety_threshold_violations": int(frame.safety_violation.sum()),
++        "tc_mean_abs_err": float(frame.tc_mean_abs_err.mean()),
++        "tc_time_in_comfort_band": float(frame.tc_time_in_band.mean()),
++        "spo2_mean_band_err": float(frame.spo2_mean_band_err.mean()),
++        "spo2_time_in_comfort_band": float(frame.spo2_time_in_band.mean()),
++        "spo2_min_observed": float(frame.spo2_min.min()),
++        "control_effort": float(frame.control_effort.mean()),
++        "heater_energy_kJ": float(frame.heater_energy_kJ.mean()),
++        "mean_action_switches": float(frame.action_switches.mean()),
++        "mean_recovery_steps_observed": float(recovery.mean()) if len(recovery) else None,
++        "episodes_with_observed_recovery": int(len(recovery)),
++    }
+ 
+ 
+ def run_decision_validation(
+@@ -354,23 +365,22 @@
+     seed_base: int = 42,
+     shap_method: str = "deep",
+     skip_shap: bool = False,
++    context=None,
+ ) -> Dict[str, Any]:
+     """Execute complete validation across Normal, Abnormal Temp, and Abnormal O2 scenarios."""
+     os.makedirs(output_dir, exist_ok=True)
+     set_global_seeds(seed_base)
+ 
+     logger.info(f"Loading DDQNAgent from '{checkpoint_path}'...")
+-    agent = load_trained_agent(checkpoint_path, device=device)
++    if episodes_per_scenario < 1:
++        raise ValueError("episodes_per_scenario must be positive")
++    if skip_shap:
++        agent = load_trained_agent(checkpoint_path, device)
++        explainer = None
++    else:
++        agent, _, _, _, explainer = context or prepare_explanation(checkpoint_path, device, seed_base, shap_method)
+     ddqn_policy = AgentPolicy(agent, name="ddqn")
+     baseline_policy = BaselinePolicy(name="baseline")
+-
+-    explainer: Optional[DDQNShapExplainer] = None
+-    if not skip_shap:
+-        logger.info(f"Initializing stratified background dataset for SHAP decision attribution (method='{shap_method}')...")
+-        _, norm_bg, _ = collect_background_dataset(seed=seed_base, agent=agent)
+-        explainer = DDQNShapExplainer(agent=agent, background_norm=norm_bg, method=shap_method)
+-    else:
+-        logger.info("SHAP calculations disabled for validation via skip_shap flag.")
+ 
+     validation_groups = {
+         "normal": [1],
+@@ -380,15 +390,6 @@
+ 
+     all_metrics: List[Dict[str, Any]] = []
+     scenario_dfs: Dict[str, pd.DataFrame] = {}
+-
+-    # Representative time-steps for SHAP explanations during trajectory rollouts
+-    explain_steps_map = {
+-        1: [0, 50, 100, 150],             # Equilibrium setpoint tracking
+-        2: [0, 50, 100, 150, 199],        # Ambient cooling ramp
+-        3: [45, 55, 75, 85, 120],         # Porthole opening window [50, 80]
+-        4: [0, 10, 30, 60, 100],          # Rewarming from cold-start hypothermia
+-        5: [55, 65, 90, 115, 140],        # Desaturation challenge window [60, 120]
+-    }
+ 
+     total_episodes_ddqn = 0
+     total_episodes_base = 0
+@@ -411,7 +412,6 @@
+                     policy=ddqn_policy,
+                     seed=ep_seed,
+                     explainer=explainer,
+-                    explain_steps=explain_steps_map.get(scn, [0, 50, 100]),
+                 )
+                 met_ddqn["group"] = group_name
+                 met_ddqn["ep_index"] = ep_idx
+@@ -462,6 +462,7 @@
+         "checkpoint_path": checkpoint_path,
+         "shap_configuration": {
+             "skip_shap": skip_shap,
++            "fallback_reason": explainer.fallback_reason if explainer else None,
+             "shap_method_requested": shap_method,
+             "shap_method_used": explainer.method if explainer is not None else "none",
+         },
+@@ -484,76 +485,19 @@
+         base_rows = df_scn[df_scn["policy"] == "baseline"]
+ 
+         summary_dict["by_scenario"][scn_name] = {
+-            "scenario_id": scn,
+-            "ddqn": {
+-                "mean_total_reward": float(ddqn_rows["total_reward"].mean()),
+-                "std_total_reward": float(ddqn_rows["total_reward"].std()),
+-                "modeled_termination_avoidance_rate": float(ddqn_rows["survived"].mean()),
+-                "tc_mean_abs_err": float(ddqn_rows["tc_mean_abs_err"].mean()),
+-                "tc_time_in_comfort_band": float(ddqn_rows["tc_time_in_band"].mean()),
+-                "spo2_mean_band_err": float(ddqn_rows["spo2_mean_band_err"].mean()),
+-                "spo2_time_in_comfort_band": float(ddqn_rows["spo2_time_in_band"].mean()),
+-                "spo2_min_observed": float(ddqn_rows["spo2_min"].min()),
+-                "control_effort": float(ddqn_rows["control_effort"].mean()),
+-                "heater_energy_kJ": float(ddqn_rows["heater_energy_kJ"].mean()),
+-                "mean_action_switches": float(ddqn_rows["action_switches"].mean()),
+-                "safety_threshold_violations": int(ddqn_rows["safety_violation"].sum()),
+-            },
+-            "baseline": {
+-                "mean_total_reward": float(base_rows["total_reward"].mean()),
+-                "std_total_reward": float(base_rows["total_reward"].std()),
+-                "modeled_termination_avoidance_rate": float(base_rows["survived"].mean()),
+-                "tc_mean_abs_err": float(base_rows["tc_mean_abs_err"].mean()),
+-                "tc_time_in_comfort_band": float(base_rows["tc_time_in_band"].mean()),
+-                "spo2_mean_band_err": float(base_rows["spo2_mean_band_err"].mean()),
+-                "spo2_time_in_comfort_band": float(base_rows["spo2_time_in_band"].mean()),
+-                "spo2_min_observed": float(base_rows["spo2_min"].min()),
+-                "control_effort": float(base_rows["control_effort"].mean()),
+-                "heater_energy_kJ": float(base_rows["heater_energy_kJ"].mean()),
+-                "mean_action_switches": float(base_rows["action_switches"].mean()),
+-                "safety_threshold_violations": int(base_rows["safety_violation"].sum()),
+-            },
+-            "ddqn_advantage_return": float(
+-                ddqn_rows["total_reward"].mean() - base_rows["total_reward"].mean()
+-            ),
++            "scenario_id": scn, "ddqn": summarize_episodes(ddqn_rows),
++            "baseline": summarize_episodes(base_rows),
++            "ddqn_advantage_return": float(ddqn_rows.total_reward.mean() - base_rows.total_reward.mean()),
+         }
+ 
+-    ddqn_all = df_metrics[df_metrics["policy"] == "ddqn"]
+-    base_all = df_metrics[df_metrics["policy"] == "baseline"]
+-
+-    summary_dict["overall"] = {
+-        "ddqn": {
+-            "mean_total_reward": float(ddqn_all["total_reward"].mean()),
+-            "modeled_termination_avoidance_rate": float(ddqn_all["survived"].mean()),
+-            "safety_threshold_violations": int(ddqn_all["safety_violation"].sum()),
+-            "tc_mean_abs_err": float(ddqn_all["tc_mean_abs_err"].mean()),
+-            "tc_time_in_comfort_band": float(ddqn_all["tc_time_in_band"].mean()),
+-            "spo2_mean_band_err": float(ddqn_all["spo2_mean_band_err"].mean()),
+-            "spo2_time_in_comfort_band": float(ddqn_all["spo2_time_in_band"].mean()),
+-            "control_effort": float(ddqn_all["control_effort"].mean()),
+-            "heater_energy_kJ": float(ddqn_all["heater_energy_kJ"].mean()),
+-            "mean_action_switches": float(ddqn_all["action_switches"].mean()),
+-        },
+-        "baseline": {
+-            "mean_total_reward": float(base_all["total_reward"].mean()),
+-            "modeled_termination_avoidance_rate": float(base_all["survived"].mean()),
+-            "safety_threshold_violations": int(base_all["safety_violation"].sum()),
+-            "tc_mean_abs_err": float(base_all["tc_mean_abs_err"].mean()),
+-            "tc_time_in_comfort_band": float(base_all["tc_time_in_band"].mean()),
+-            "spo2_mean_band_err": float(base_all["spo2_mean_band_err"].mean()),
+-            "spo2_time_in_comfort_band": float(base_all["spo2_time_in_band"].mean()),
+-            "control_effort": float(base_all["control_effort"].mean()),
+-            "heater_energy_kJ": float(base_all["heater_energy_kJ"].mean()),
+-            "mean_action_switches": float(base_all["action_switches"].mean()),
+-        },
+-        "net_ddqn_improvement": float(
+-            ddqn_all["total_reward"].mean() - base_all["total_reward"].mean()
+-        ),
+-    }
++    ddqn = summarize_episodes(df_metrics[df_metrics.policy == "ddqn"])
++    baseline = summarize_episodes(df_metrics[df_metrics.policy == "baseline"])
++    summary_dict["overall"] = {"ddqn": ddqn, "baseline": baseline,
++        "net_ddqn_improvement": ddqn["mean_total_reward"] - baseline["mean_total_reward"]}
+ 
+     summary_json = os.path.join(output_dir, "validation_summary.json")
+     with open(summary_json, "w", encoding="utf-8") as fh:
+-        json.dump(summary_dict, fh, indent=2)
++        json.dump(summary_dict, fh, indent=2, allow_nan=False)
+ 
+     logger.info(f"Validation complete. Summary saved -> {summary_json}")
+     logger.info(
+@@ -604,7 +548,7 @@
+         type=str,
+         choices=["deep", "kernel"],
+         default="deep",
+-        help="SHAP method for representative trajectory explanations",
++        help="SHAP method for every DDQN decision",
+     )
+     parser.add_argument(
+         "--skip-shap",
+--- incoming/run_member03.py
++++ submission/run_member03.py
+@@ -42,7 +42,7 @@
+ if _SRC_DIR not in sys.path:
+     sys.path.insert(0, _SRC_DIR)
+ 
+-from shap_explainer import run_shap_analysis
++from shap_explainer import run_shap_analysis, prepare_explanation
+ from validation import run_decision_validation
+ 
+ 
+@@ -69,9 +69,11 @@
+     print(f"[*] SHAP Method     : {shap_method} (skip={skip_shap})")
+     print("=" * 80)
+ 
++    context = None if skip_shap else prepare_explanation(checkpoint, device, seed, shap_method)
++
+     # 1. Decision Validation Stage
+     val_out_dir = os.path.join(output_base_dir, "validation")
+-    print("\n[PHASE 3] Starting Multi-Scenario Decision Validation...")
++    print("\n[Validation] Starting Multi-Scenario Decision Validation...")
+     val_summary = run_decision_validation(
+         checkpoint_path=checkpoint,
+         output_dir=val_out_dir,
+@@ -80,22 +82,24 @@
+         seed_base=seed,
+         shap_method=shap_method,
+         skip_shap=skip_shap,
++        context=context,
+     )
+ 
+     # 2. SHAP Explainability Stage
+     shap_out_dir = os.path.join(output_base_dir, "shap")
+     shap_manifest: Dict[str, Any] = {}
+     if not skip_shap:
+-        print("\n[PHASE 2] Starting SHAP Explainability Engine...")
++        print("\n[SHAP] Starting SHAP Explainability Engine...")
+         shap_manifest = run_shap_analysis(
+             checkpoint_path=checkpoint,
+             output_dir=shap_out_dir,
+             method=shap_method,
+             device=device,
+             seed=seed,
++            context=context,
+         )
+     else:
+-        print("\n[PHASE 2] SHAP analysis skipped via flag.")
++        print("\n[SHAP] SHAP analysis skipped via flag.")
+ 
+     elapsed = time.time() - start_time
+ 
+@@ -138,7 +142,7 @@
+         print(f"  [SHAP Manifest]   : {shap_out_dir}/shap_manifest.json")
+         print(f"  [SHAP Background] : {shap_out_dir}/background_metadata.json")
+     print("=" * 80)
+-    print("Status: SUCCESS - All Member 03 requirements fulfilled.")
++    print("Validation completed." if skip_shap else "Validation and SHAP export completed.")
+     print("=" * 80)
+ 
+     return {

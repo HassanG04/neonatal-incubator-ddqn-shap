@@ -1,0 +1,3 @@
+python run_member03.py --shap-method kernel
+Working copy kernel
+

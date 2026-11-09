@@ -1,0 +1,53 @@
+D:\Projects\Programming\AAST\Term7\selected_topics\proj_7th\tools\verify_submission.py:35: DeprecationWarning: numpy.core.numeric is deprecated and has been renamed to numpy._core.numeric. The numpy._core namespace contains private NumPy internals and its use is discouraged, as NumPy internals can change without warning in any release. In practice, most real-world usage of numpy.core is to access functionality in the public NumPy API. If that is the case, use the public NumPy API. If not, you are using NumPy internals. If you would still like to access an internal attribute, use numpy._core.numeric._frombuffer.
+  ck = pickle.loads(data)
+{
+  "method": "kernel",
+  "episodes": 50,
+  "transitions": 10000,
+  "ddqn_decisions_explained": 5000,
+  "background_counts": [
+    82,
+    8,
+    10
+  ],
+  "max_csv_reconstruction_error": 1.5273690223693848e-07,
+  "max_deep_feature_difference": null,
+  "heater_switches": 3782,
+  "oxygen_switches": 3811,
+  "simultaneous_switches": 2982,
+  "overall": {
+    "ddqn": {
+      "mean_total_reward": -20.65714784682367,
+      "std_total_reward": 4.353781493253615,
+      "modeled_termination_avoidance_rate": 1.0,
+      "safety_threshold_violations": 0,
+      "tc_mean_abs_err": 0.19674474334716796,
+      "tc_time_in_comfort_band": 0.9571999999999998,
+      "spo2_mean_band_err": 0.05472433929443359,
+      "spo2_time_in_comfort_band": 0.8161999999999999,
+      "spo2_min_observed": 88.7763442993164,
+      "control_effort": 0.7487538461538463,
+      "heater_energy_kJ": 1111.968,
+      "mean_action_switches": 184.44,
+      "mean_recovery_steps_observed": 1.2,
+      "episodes_with_observed_recovery": 15
+    },
+    "baseline": {
+      "mean_total_reward": -22.884022325461277,
+      "std_total_reward": 22.164715973653422,
+      "modeled_termination_avoidance_rate": 1.0,
+      "safety_threshold_violations": 0,
+      "tc_mean_abs_err": 0.19146964340209963,
+      "tc_time_in_comfort_band": 0.9872,
+      "spo2_mean_band_err": 0.06468101348876953,
+      "spo2_time_in_comfort_band": 0.9526,
+      "spo2_min_observed": 88.65760040283203,
+      "control_effort": 0.3177358974358975,
+      "heater_energy_kJ": 984.6360000000001,
+      "mean_action_switches": 120.12,
+      "mean_recovery_steps_observed": 0.6666666666666666,
+      "episodes_with_observed_recovery": 15
+    },
+    "net_ddqn_improvement": 2.2268744786376082
+  }
+}

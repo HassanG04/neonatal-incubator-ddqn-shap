@@ -1,0 +1,5 @@
+  File "D:\Projects\Programming\AAST\Term7\selected_topics\proj_7th\tools\verify_submission.py", line 201
+    else:\n            for i, x in enumerate(bg):\n                close(full[i], kernel(x), ATOL)\n        glob = manifest["global_feature_importance"]
+          ^
+SyntaxError: unexpected character after line continuation character
+Exit code 1 | wall time 0.2317386 s

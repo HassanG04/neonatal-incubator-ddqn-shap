@@ -1,0 +1,306 @@
+# =============================================================================
+# config.yaml  --  Member 1 deliverable
+# -----------------------------------------------------------------------------
+# Project : Neonatal Incubator Regulation via DDQN + SHAP (RL + XAI)
+# Owner   : Member 1 (environment + baseline PID controller)
+# Shared  : Members 2 (DDQN training) and 3 (SHAP / XAI) consume the SAME file.
+#
+# Notes   : - SPACES ONLY (no tabs) -- YAML is indentation-sensitive.
+#           - This file is the SINGLE SOURCE OF TRUTH for physics/reward/
+#             safety parameters. src/environment.py loads it via load_config()
+#             at construction time, so editing a value here changes the
+#             simulator behaviour immediately (V2-07 fix).
+#           - Every value below mirrors src/environment.py module-level
+#             constants; load_config() applies scalar overrides.
+#           - All temperatures are in deg C, oxygen in %, power in W, time in s.
+#           - Safety constants are SIMULATION parameters, NOT clinical guidance.
+# =============================================================================
+
+
+# -----------------------------------------------------------------------------
+# 1. project
+#    Top-level metadata describing the deliverable and target population.
+# -----------------------------------------------------------------------------
+project:
+  name: "neonatal-incubator-ddqn-shap"
+  description: >-
+    First-principles neonatal incubator simulation with a Gymnasium API for
+    joint temperature and FiO2 regulation. Provides the MDP contract for
+    Member 2 (DDQN agent) and Member 3 (SHAP / XAI).
+  population: "preterm_post_stabilization"
+  disclaimer: >-
+    Safety constants are simulation parameters, not clinical guidance.
+
+
+# -----------------------------------------------------------------------------
+# 2. environment
+#    Simulation step, observation/action spaces and the discrete control levels
+#    used by the environment for heater power and FiO2 blender output.
+#    Mirrors src/environment.py module-level constants.
+# -----------------------------------------------------------------------------
+environment:
+  dt: 45.0                              # DT_STEP -- seconds per control step (s)
+  max_steps: 200                        # MAX_STEPS -- 200*45s = 2.5 h episode
+  n_substeps: 10                        # N_SUBSTEPS -- internal Euler sub-steps
+  observation_dim: 11                   # Box(11,) float32  (V2-04: +scenario_id)
+  action_dim: 25                        # Discrete(25) = 5 heater x 5 FiO2
+  obs_names:                            # OBS_NAMES -- frozen order for M2/M3
+    - "Tc"            # core body temperature            (deg C)
+    - "Tsk"           # skin temperature                 (deg C)
+    - "Ta"            # incubator air temperature        (deg C)
+    - "C_O2"          # inspired O2 concentration         (%)
+    - "SpO2"          # arterial oxygen saturation       (%)
+    - "Tamb"          # ambient room temperature          (deg C)
+    - "dTa_dt"        # realized rate of Ta              (deg C / s)
+    - "dC_O2_dt"      # realized rate of C_O2             (% / s)
+    - "phase"         # normalized episode time step/max_steps  [-]
+    - "disturbance"   # 0.0 idle, 1.0 porthole, 2.0 O2 desaturation
+    - "scenario_id"   # normalized scenario id (scenario-1)/4 in [0,1]
+  heater_levels: [0.0, 0.25, 0.50, 0.75, 1.0]   # HEATER_LEVELS -- fractional
+  fio2_levels:    [0.21, 0.30, 0.40, 0.50, 0.60] # FIO2_LEVELS -- delivered FiO2
+  q_heater_max: 360.0                   # Q_HEATER_MAX (W) -- max heater power
+  seed: 42                              # master RNG seed for reproducibility
+
+
+# -----------------------------------------------------------------------------
+# 3. physics
+#    Lumped-parameter thermal + oxygen mass-balance model constants.
+#    All rates are first-order; the environment integrates with dt-scaled Euler.
+# -----------------------------------------------------------------------------
+physics:
+  thermal:
+    k_loss: 8.0           # K_LOSS  (W/deg C) -- well-insulated double-wall incubator
+                              # (V2-02: lowered from 15 for porthole feasibility)
+    k_baby: 4.0           # K_BABY  (W/deg C) -- baby<->air conductance
+    c_air: 1500.0          # C_AIR   (J/deg C) -- air-node heat capacity
+                              # (V2-02: raised from 200 -> air time const ~75s)
+    c_core: 2000.0        # C_CORE  (J/deg C) -- core-node heat capacity
+    porthole_h_c_factor: 2.0   # PORTHOLE_H_C_FACTOR (V2-02: 3.5->2.0 feasible)
+    porthole_start: 50         # PORTHOLE_START -- step porthole opens
+    porthole_end: 80           # PORTHOLE_END   -- step porthole closes
+  oxygen:
+    k_blend: 0.05         # K_BLEND (1/s) -- blender/inhalation mixing rate
+    k_leak: 0.005         # K_LEAK  (1/s) -- slow leak toward room air (21%)
+    o2_disturb_start: 60  # O2_DISTURB_START -- step desaturation begins
+    o2_disturb_end: 120   # O2_DISTURB_END   -- step desaturation ends
+    desat_offset: 5.0     # DESAT_OFFSET (%) -- peak SpO2_eq depression (V3-03 fix:
+                              # reduced from 8 to 5 -> recoverable challenge.
+                              # Feasibility: at peak, max FiO2=0.60 gives
+                              # C_O2=56.45 -> SpO2_eq = 92 + 0.15*35.45 - 5 = 92.32%
+                              # -> inside [91,95] target band, achievable.)
+  spo2:
+    k_spo2: 0.02          # K_SPO2  (1/s) -- SpO2 response rate
+    spo2_base: 92.0       # SPO2_BASE (%) -- equilibrium SpO2 at FiO2=21%
+    spo2_gain: 0.15       # SPO2_GAIN (%-SpO2 per %-C_O2 above 21%)
+    spo2_min: 70.0        # SPO2_MIN (%) -- physiological floor
+    spo2_max: 100.0       # SPO2_MAX (%) -- physiological ceiling
+
+
+# -----------------------------------------------------------------------------
+# 4. baseline
+#    PID controller (per-loop) used as the non-RL baseline. Tc loop drives the
+#    heater; SpO2 loop drives the FiO2 blender. Anti-windup clamps integrator.
+# -----------------------------------------------------------------------------
+baseline:
+  target_Tc: 37.0           # Target core body temperature (deg C)
+  target_SpO2: 93.0         # Target peripheral oxygen saturation (%)
+  Kp: 0.8                   # Proportional gain
+  Ki: 0.05                  # Integral gain
+  Kd: 0.1                   # Derivative gain
+  anti_windup: 1.0          # Integrator clamp magnitude
+  dt: 45.0                  # Control interval (s) -- must match environment.dt
+
+
+# -----------------------------------------------------------------------------
+# 5. reward
+#    Multi-objective reward shaping. Safety penalty dominates on hard breaches.
+#    EXACT implemented formula (V2-05 fix -- weighted, squared band error):
+#
+#        r_thermal = -(Tc - TC_SETPOINT)^2
+#        r_oxygen  = -band_err_sq(SpO2, [SPO2_TARGET_LOW, SPO2_TARGET_HIGH])
+#                   where band_err_sq = 0            if SpO2 in [91,95],
+#                                     = (91 - SpO2)^2  if SpO2 < 91,
+#                                     = (SpO2 - 95)^2  if SpO2 > 95
+#        r_energy  = -(u_heater^2 + u_fio2_norm^2)
+#                   where u_fio2_norm = (fio2_cmd - 0.21) / (0.60 - 0.21)
+#        r_safety  = -R_SAFETY_PENALTY  if Tc outside [TC_SAFE_LOW, TC_SAFE_HIGH]
+#                                       or SpO2 outside [SPO2_SAFE_LOW, SPO2_SAFE_HIGH]
+#                   = 0                  otherwise
+#        R = w_thermal*r_thermal + w_oxygen*r_oxygen
+#          + w_energy*r_energy + w_safety*r_safety
+#    Worked example (Tc=37.0, SpO2=93.0, u_heater=0.5, fio2=0.30, safe):
+#        r_thermal = 0, r_oxygen = 0 (in band),
+#        u_fio2_norm = (0.30-0.21)/0.39 = 0.231, r_energy = -(0.25+0.053) = -0.303,
+#        r_safety = 0, R = 0 + 0 + 0.05*(-0.303) + 0 = -0.0151
+# -----------------------------------------------------------------------------
+reward:
+  weights:
+    w_thermal: 1.0           # DEFAULT_W_THERMAL
+    w_oxygen: 0.5            # DEFAULT_W_OXYGEN
+    w_energy: 0.05           # DEFAULT_W_ENERGY
+    w_safety: 1.0            # DEFAULT_W_SAFETY
+  r_safety_penalty: 100.0    # R_SAFETY_PENALTY -- subtracted on hard breach
+  tc_setpoint: 37.0          # TC_SETPOINT (deg C)
+  spo2_target_low: 91.0      # SPO2_TARGET_LOW  (%) -- NICE preterm band
+  spo2_target_high: 95.0     # SPO2_TARGET_HIGH (%) -- NICE preterm band
+
+
+# -----------------------------------------------------------------------------
+# 6. safety
+#    Hard physiological bounds. Crossing the *_safe_* limits triggers a safety
+#    penalty and, in training, early episode termination.
+#    The *_normal_* bounds are softer "comfort" bands used for shaping.
+# -----------------------------------------------------------------------------
+safety:
+  tc_safe_low: 35.5          # TC_SAFE_LOW   -- hypothermia floor (deg C)
+  tc_safe_high: 38.0         # TC_SAFE_HIGH  -- hyperthermia ceiling (deg C)
+  spo2_safe_low: 85.0        # SPO2_SAFE_LOW -- hypoxia floor (%)
+  spo2_safe_high: 96.0       # SPO2_SAFE_HIGH -- hyperoxia/ROP ceiling (%)
+  tc_normal_low: 36.5        # TC_NORMAL_LOW  -- comfort band (deg C)
+  tc_normal_high: 37.5       # TC_NORMAL_HIGH -- comfort band (deg C)
+  ta_normal_low: 28.0        # TA_NORMAL_LOW  -- comfort band (deg C)
+  ta_normal_high: 34.0       # TA_NORMAL_HIGH -- comfort band (deg C)
+
+
+# -----------------------------------------------------------------------------
+# 7. scenarios
+#    Five canonical clinical scenarios used for evaluation and stress testing.
+#    `id` matches environment.scenario; `name` matches SCENARIO_NAMES.
+#    `initial_state` mirrors the reset() branches in environment.py.
+# -----------------------------------------------------------------------------
+scenarios:
+  - id: 1
+    name: "normal_standard"
+    description: >-
+      Stable preterm neonate in nominal incubator conditions; used as the
+      baseline reference scenario with no scheduled disturbances.
+    initial_state:
+      Tc: 37.0
+      Tsk: 36.5
+      Ta: 34.0
+      C_O2: 21.0
+      SpO2: 92.0
+      Tamb: 25.0
+    disturbance: "none"
+
+  - id: 2
+    name: "ambient_temperature_drop"
+    description: >-
+      Ambient (room) temperature drops linearly across the episode, increasing
+      incubator heat loss and stressing the thermal controller.
+    initial_state:
+      Tc: 37.0
+      Tsk: 36.5
+      Ta: 34.0
+      C_O2: 21.0
+      SpO2: 92.0
+      Tamb: 25.0
+    disturbance: >-
+      Tamb(t) = 25.0 - 7.0 * (step / max_steps)  -- linear drop to ~18 deg C.
+
+  - id: 3
+    name: "porthole_opening_event"
+    description: >-
+      Porthole is opened during steps [50, 80], multiplying incubator heat loss
+      by PORTHOLE_H_C_FACTOR (2.0) and causing a transient thermal perturbation.
+      Incubator starts pre-warmed (Ta=36) reflecting a stable care setting.
+    initial_state:
+      Tc: 37.0
+      Tsk: 36.5
+      Ta: 36.0
+      C_O2: 21.0
+      SpO2: 92.0
+      Tamb: 25.0
+    disturbance: >-
+      h_c_factor = 2.0 on steps [50, 80]; disturbance_flag = 1.0 in that window.
+      Feasibility (V2-02): at u=1.0, steady-state Ta = 25 + 360/(8*2) = 47.5 deg C
+      -> a full-heating policy can hold Tc >= 35.5 throughout the event.
+
+  - id: 4
+    name: "initial_hypothermia"
+    description: >-
+      Cold-start mild hypothermia + mild desaturation. Tc=35.8 is below the
+      normal band (36.5) but ABOVE the hard floor (35.5), so the episode does
+      not terminate immediately and the agent must rewarm the infant.
+      Ta=36 (warmer than Tc) so the air can warm the baby; this models a
+      pre-warmed incubator receiving a cold infant (admission scenario).
+    initial_state:
+      Tc: 35.8
+      Tsk: 35.3
+      Ta: 36.0
+      C_O2: 21.0
+      SpO2: 88.0
+      Tamb: 25.0
+    disturbance: "none (initial-condition stress only)"
+
+  - id: 5
+    name: "oxygen_disturbance_desaturation"
+    description: >-
+      A physiological desaturation event (apnea-like) is active during steps
+      [60, 120], directly depressing the SpO2 equilibrium by up to DESAT_OFFSET
+      (5 percentage points, half-sinusoidal profile). The agent must counter by
+      raising FiO2 to push C_O2 (and thus SpO2_eq) back up. (V2-01 fix: the
+      disturbance acts on the infant SpO2 response model, not on C_O2 itself.)
+    initial_state:
+      Tc: 37.0
+      Tsk: 36.5
+      Ta: 34.0
+      C_O2: 21.0
+      SpO2: 92.0
+      Tamb: 25.0
+    disturbance: >-
+      desat_offset(t) = DESAT_OFFSET * sin(pi*(step-60)/60) on steps [60, 120];
+      disturbance_flag = 2.0 in that window. Produces a measurable SpO2 dip
+      (peak depression ~5% at step 90) that the controller must compensate.
+
+
+# -----------------------------------------------------------------------------
+# 8. training
+#    DDQN / DQN hyperparameters for Member 2 (TensorFlow / Keras backend).
+#    Selected on validation seeds only; held-out test seeds are untouched
+#    until final evaluation.
+# -----------------------------------------------------------------------------
+training:
+  gamma: 0.99                      # Discount factor
+  lr: 1.0e-4                       # Adam learning rate (validation-selected in hyperparameter_study.csv)
+  batch_size: 128                  # Mini-batch sampled from replay buffer
+  hidden_sizes: [128, 128]         # 2-layer MLP hidden layer widths
+  buffer_size: 100000              # Replay buffer capacity
+  warmup_steps: 3000               # Initial random exploration steps before updates
+  total_steps: 100000              # Total environment interaction steps per run
+  train_freq: 2                    # Environment steps between gradient updates
+  gradient_steps: 1                # Gradient steps per training update
+  target_update: "hard"            # Target sync mode ("hard" | "soft")
+  target_update_interval: 500      # Gradient steps between hard target network copies
+  tau: 0.005                       # Soft target update coefficient (if target_update="soft")
+  grad_clip_norm: 10.0             # Global gradient norm clip
+  huber_delta: 1.0                 # Huber / smooth-L1 loss threshold
+  reward_scale: 0.1                # Reward scaling applied in replay buffer
+  eps_start: 1.0                   # Initial epsilon (full exploration)
+  eps_end: 0.01                    # Final epsilon (validation-selected in hyperparameter_study.csv)
+  eps_decay_steps: 20000           # Linear epsilon decay horizon (validation-selected in hyperparameter_study.csv)
+  baseline_guided_prob: 0.0        # Pure RL exploration (no baseline action shield)
+  scenario_sampling: "balanced"    # Balanced permutation sampling across scenarios 1..5
+  scenarios: [1, 2, 3, 4, 5]       # Active training scenarios
+  eval_interval: 5000              # Greedy validation interval (env steps)
+  val_episodes_per_scenario: 3     # Validation episodes per scenario
+  log_interval: 250                # Gradient steps between update CSV log rows
+  seeds: [0, 1, 2]                 # Multi-seed training runs
+  device: "auto"                   # Device selection ("auto" | "cpu" | "gpu")
+  # Legacy compatibility keys:
+  target_update_freq: 10
+  eps_decay: 0.995
+  episodes: 500
+
+
+# -----------------------------------------------------------------------------
+# 9. paths
+#    Output locations. All paths are RELATIVE to the member_1/ root directory.
+# -----------------------------------------------------------------------------
+paths:
+  results_dir: "results"   # CSV/JSON metrics, episode trajectories
+  plots_dir: "plots"       # PNG figures (time-series, reward curves, SHAP)
+  models_dir: "models"     # Saved DDQN checkpoints (.pt)
+  src_dir: "src"            # Source code (environment, baseline, run scripts)
+  docs_dir: "docs"          # Markdown documentation
+  tests_dir: "tests"        # Pytest unit tests

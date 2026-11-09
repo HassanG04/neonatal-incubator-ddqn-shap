@@ -1,0 +1,17 @@
+Inspect result written to file: D:\Projects\Programming\AAST\Term7\selected_topics\proj_7th\_final_work\checklist\candidate.pptx.inspect.ndjson
+node:internal/fs/promises:1774
+  return await PromisePrototypeThen(
+         ^
+
+Error: EPERM: operation not permitted, link 'D:\Projects\Programming\AAST\Term7\selected_topics\proj_7th\presentation\.Project04_Final_Presentation.pptx.90acc92a-e5de-46d1-a89e-45376b0dfb11.validated' -> 'D:\Projects\Programming\AAST\Term7\selected_topics\proj_7th\presentation\Project04_Final_Presentation.pptx'
+    at async Object.link (node:internal/fs/promises:1774:10)
+    at async finalizePresentation (file:///C:/Users/Hassan-PC/.codex/plugins/cache/openai-primary-runtime/presentations/26.1105.12137/skills/presentations/container_tools/artifact_tool_utils.mjs:1018:5)
+    at async file:///D:/Projects/Programming/AAST/Term7/selected_topics/proj_7th/_final_work/checklist/build.mjs:72:1 {
+  errno: -4048,
+  code: 'EPERM',
+  syscall: 'link',
+  path: 'D:\\Projects\\Programming\\AAST\\Term7\\selected_topics\\proj_7th\\presentation\\.Project04_Final_Presentation.pptx.90acc92a-e5de-46d1-a89e-45376b0dfb11.validated',
+  dest: 'D:\\Projects\\Programming\\AAST\\Term7\\selected_topics\\proj_7th\\presentation\\Project04_Final_Presentation.pptx'
+}
+
+Node.js v24.22.1

@@ -1,0 +1,52 @@
+Inspect result written to file: D:\Projects\Programming\AAST\Term7\selected_topics\proj_7th\_final_work\checklist\candidate.pptx.inspect.ndjson
+file:///C:/Users/Hassan-PC/.codex/plugins/cache/openai-primary-runtime/presentations/26.1105.12137/skills/presentations/container_tools/artifact_tool_utils.mjs:483
+  const error = new Error(`${message}${details ? `\n${details.slice(0, 8000)}` : ""}`, {
+                ^
+
+Error: Exact staged presentation failed first-party Artifact Tool import
+file:///C:/Users/Hassan-PC/.codex/plugins/cache/openai-primary-runtime/presentations/26.1105.12137/skills/presentations/container_tools/runtime_helpers.mjs:12
+
+    throw new Error("RUNTIME_NODE_MODULES or CODEX_PRIMARY_RUNTIME_NODE_MODULES is required.");
+
+          ^
+
+
+
+Error: RUNTIME_NODE_MODULES or CODEX_PRIMARY_RUNTIME_NODE_MODULES is required.
+
+    at runtimeNodeModules (file:///C:/Users/Hassan-PC/.codex/plugins/cache/openai-primary-runtime/presentations/26.1105.12137/skills/presentations/container_tools/runtime_helpers.mjs:12:11)
+
+    at runtimeRequire (file:///C:/Users/Hassan-PC/.codex/plugins/cache/openai-primary-runtime/presentations/26.1105.12137/skills/presentations/container_tools/runtime_helpers.mjs:25:29)
+
+    at importRuntimeModule (file:///C:/Users/Hassan-PC/.codex/plugins/cache/openai-primary-runtime/presentations/26.1105.12137/skills/presentations/container_tools/runtime_helpers.mjs:44:53)
+
+    at file:///D:/Projects/Programming/AAST/Term7/selected_topics/proj_7th/[eval1]:7:50
+
+
+
+Node.js v24.22.1
+    at processFailure (file:///C:/Users/Hassan-PC/.codex/plugins/cache/openai-primary-runtime/presentations/26.1105.12137/skills/presentations/container_tools/artifact_tool_utils.mjs:483:17)
+    at verifyFirstPartyImport (file:///C:/Users/Hassan-PC/.codex/plugins/cache/openai-primary-runtime/presentations/26.1105.12137/skills/presentations/container_tools/artifact_tool_utils.mjs:718:11)
+    at finalizePresentation (file:///C:/Users/Hassan-PC/.codex/plugins/cache/openai-primary-runtime/presentations/26.1105.12137/skills/presentations/container_tools/artifact_tool_utils.mjs:964:7)
+    at async file:///D:/Projects/Programming/AAST/Term7/selected_topics/proj_7th/_final_work/checklist/build.mjs:72:1 {
+  code: 'PRESENTATION_VALIDATION_FAILED',
+  validator: 'first-party-import',
+  exitCode: 1,
+  signal: null,
+  stdout: '',
+  stderr: 'file:///C:/Users/Hassan-PC/.codex/plugins/cache/openai-primary-runtime/presentations/26.1105.12137/skills/presentations/container_tools/runtime_helpers.mjs:12\r\n' +
+    '    throw new Error("RUNTIME_NODE_MODULES or CODEX_PRIMARY_RUNTIME_NODE_MODULES is required.");\r\n' +
+    '          ^\r\n' +
+    '\r\n' +
+    'Error: RUNTIME_NODE_MODULES or CODEX_PRIMARY_RUNTIME_NODE_MODULES is required.\r\n' +
+    '    at runtimeNodeModules (file:///C:/Users/Hassan-PC/.codex/plugins/cache/openai-primary-runtime/presentations/26.1105.12137/skills/presentations/container_tools/runtime_helpers.mjs:12:11)\r\n' +
+    '    at runtimeRequire (file:///C:/Users/Hassan-PC/.codex/plugins/cache/openai-primary-runtime/presentations/26.1105.12137/skills/presentations/container_tools/runtime_helpers.mjs:25:29)\r\n' +
+    '    at importRuntimeModule (file:///C:/Users/Hassan-PC/.codex/plugins/cache/openai-primary-runtime/presentations/26.1105.12137/skills/presentations/container_tools/runtime_helpers.mjs:44:53)\r\n' +
+    '    at file:///D:/Projects/Programming/AAST/Term7/selected_topics/proj_7th/[eval1]:7:50\r\n' +
+    '\r\n' +
+    'Node.js v24.22.1\r\n',
+  report: undefined,
+  [cause]: undefined
+}
+
+Node.js v24.22.1

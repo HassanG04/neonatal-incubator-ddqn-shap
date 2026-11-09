@@ -1,0 +1,1083 @@
+{
+  "total_samples": 100,
+  "sampling_strategy": "deterministic_stratified_timeline",
+  "records": [
+    {
+      "scenario": 1,
+      "step": 0,
+      "policy": "baseline",
+      "disturbance": 0.0,
+      "phase": 0.0,
+      "Tamb": 25.0,
+      "Tc": 37.0,
+      "SpO2": 92.0
+    },
+    {
+      "scenario": 1,
+      "step": 25,
+      "policy": "baseline",
+      "disturbance": 0.0,
+      "phase": 0.125,
+      "Tamb": 25.0,
+      "Tc": 36.677059173583984,
+      "SpO2": 91.99495697021484
+    },
+    {
+      "scenario": 1,
+      "step": 50,
+      "policy": "baseline",
+      "disturbance": 0.0,
+      "phase": 0.25,
+      "Tamb": 25.0,
+      "Tc": 37.082916259765625,
+      "SpO2": 91.99824523925781
+    },
+    {
+      "scenario": 1,
+      "step": 75,
+      "policy": "baseline",
+      "disturbance": 0.0,
+      "phase": 0.375,
+      "Tamb": 25.0,
+      "Tc": 37.27031707763672,
+      "SpO2": 91.9505615234375
+    },
+    {
+      "scenario": 1,
+      "step": 100,
+      "policy": "baseline",
+      "disturbance": 0.0,
+      "phase": 0.5,
+      "Tamb": 25.0,
+      "Tc": 36.89924240112305,
+      "SpO2": 92.02217102050781
+    },
+    {
+      "scenario": 1,
+      "step": 125,
+      "policy": "baseline",
+      "disturbance": 0.0,
+      "phase": 0.625,
+      "Tamb": 25.0,
+      "Tc": 36.78983688354492,
+      "SpO2": 91.97706604003906
+    },
+    {
+      "scenario": 1,
+      "step": 150,
+      "policy": "baseline",
+      "disturbance": 0.0,
+      "phase": 0.75,
+      "Tamb": 25.0,
+      "Tc": 36.847171783447266,
+      "SpO2": 91.98065185546875
+    },
+    {
+      "scenario": 1,
+      "step": 195,
+      "policy": "baseline",
+      "disturbance": 0.0,
+      "phase": 0.9750000238418579,
+      "Tamb": 25.0,
+      "Tc": 36.89533615112305,
+      "SpO2": 91.9682846069336
+    },
+    {
+      "scenario": 1,
+      "step": 0,
+      "policy": "ddqn",
+      "disturbance": 0.0,
+      "phase": 0.0,
+      "Tamb": 25.0,
+      "Tc": 37.0,
+      "SpO2": 92.0
+    },
+    {
+      "scenario": 1,
+      "step": 25,
+      "policy": "ddqn",
+      "disturbance": 0.0,
+      "phase": 0.125,
+      "Tamb": 25.0,
+      "Tc": 36.87628936767578,
+      "SpO2": 93.28854370117188
+    },
+    {
+      "scenario": 1,
+      "step": 50,
+      "policy": "ddqn",
+      "disturbance": 0.0,
+      "phase": 0.25,
+      "Tamb": 25.0,
+      "Tc": 37.02561950683594,
+      "SpO2": 93.8935546875
+    },
+    {
+      "scenario": 1,
+      "step": 75,
+      "policy": "ddqn",
+      "disturbance": 0.0,
+      "phase": 0.375,
+      "Tamb": 25.0,
+      "Tc": 36.476158142089844,
+      "SpO2": 94.52323150634766
+    },
+    {
+      "scenario": 1,
+      "step": 100,
+      "policy": "ddqn",
+      "disturbance": 0.0,
+      "phase": 0.5,
+      "Tamb": 25.0,
+      "Tc": 36.73684310913086,
+      "SpO2": 92.68498992919922
+    },
+    {
+      "scenario": 1,
+      "step": 125,
+      "policy": "ddqn",
+      "disturbance": 0.0,
+      "phase": 0.625,
+      "Tamb": 25.0,
+      "Tc": 37.071407318115234,
+      "SpO2": 93.34196472167969
+    },
+    {
+      "scenario": 1,
+      "step": 150,
+      "policy": "ddqn",
+      "disturbance": 0.0,
+      "phase": 0.75,
+      "Tamb": 25.0,
+      "Tc": 37.49977111816406,
+      "SpO2": 95.16098022460938
+    },
+    {
+      "scenario": 1,
+      "step": 195,
+      "policy": "ddqn",
+      "disturbance": 0.0,
+      "phase": 0.9750000238418579,
+      "Tamb": 25.0,
+      "Tc": 37.0288200378418,
+      "SpO2": 94.79112243652344
+    },
+    {
+      "scenario": 2,
+      "step": 10,
+      "policy": "baseline",
+      "disturbance": 0.0,
+      "phase": 0.05000000074505806,
+      "Tamb": 24.684999465942383,
+      "Tc": 37.156959533691406,
+      "SpO2": 92.03591918945312
+    },
+    {
+      "scenario": 2,
+      "step": 30,
+      "policy": "baseline",
+      "disturbance": 0.0,
+      "phase": 0.15000000596046448,
+      "Tamb": 23.985000610351562,
+      "Tc": 36.97672653198242,
+      "SpO2": 92.03885650634766
+    },
+    {
+      "scenario": 2,
+      "step": 50,
+      "policy": "baseline",
+      "disturbance": 0.0,
+      "phase": 0.25,
+      "Tamb": 23.28499984741211,
+      "Tc": 36.70059585571289,
+      "SpO2": 92.01033020019531
+    },
+    {
+      "scenario": 2,
+      "step": 75,
+      "policy": "baseline",
+      "disturbance": 0.0,
+      "phase": 0.375,
+      "Tamb": 22.40999984741211,
+      "Tc": 36.828125,
+      "SpO2": 91.96338653564453
+    },
+    {
+      "scenario": 2,
+      "step": 100,
+      "policy": "baseline",
+      "disturbance": 0.0,
+      "phase": 0.5,
+      "Tamb": 21.53499984741211,
+      "Tc": 36.84259796142578,
+      "SpO2": 92.03395080566406
+    },
+    {
+      "scenario": 2,
+      "step": 125,
+      "policy": "baseline",
+      "disturbance": 0.0,
+      "phase": 0.625,
+      "Tamb": 20.65999984741211,
+      "Tc": 36.64404296875,
+      "SpO2": 92.02977752685547
+    },
+    {
+      "scenario": 2,
+      "step": 150,
+      "policy": "baseline",
+      "disturbance": 0.0,
+      "phase": 0.75,
+      "Tamb": 19.78499984741211,
+      "Tc": 37.10329818725586,
+      "SpO2": 92.0039291381836
+    },
+    {
+      "scenario": 2,
+      "step": 170,
+      "policy": "baseline",
+      "disturbance": 0.0,
+      "phase": 0.8500000238418579,
+      "Tamb": 19.084999084472656,
+      "Tc": 36.691627502441406,
+      "SpO2": 91.99425506591797
+    },
+    {
+      "scenario": 2,
+      "step": 185,
+      "policy": "baseline",
+      "disturbance": 0.0,
+      "phase": 0.925000011920929,
+      "Tamb": 18.559999465942383,
+      "Tc": 36.97142791748047,
+      "SpO2": 91.90357971191406
+    },
+    {
+      "scenario": 2,
+      "step": 198,
+      "policy": "baseline",
+      "disturbance": 0.0,
+      "phase": 0.9900000095367432,
+      "Tamb": 18.104999542236328,
+      "Tc": 37.16600036621094,
+      "SpO2": 92.09030151367188
+    },
+    {
+      "scenario": 2,
+      "step": 10,
+      "policy": "ddqn",
+      "disturbance": 0.0,
+      "phase": 0.05000000074505806,
+      "Tamb": 24.684999465942383,
+      "Tc": 37.23025894165039,
+      "SpO2": 94.66812133789062
+    },
+    {
+      "scenario": 2,
+      "step": 30,
+      "policy": "ddqn",
+      "disturbance": 0.0,
+      "phase": 0.15000000596046448,
+      "Tamb": 23.985000610351562,
+      "Tc": 37.145023345947266,
+      "SpO2": 94.65193939208984
+    },
+    {
+      "scenario": 2,
+      "step": 50,
+      "policy": "ddqn",
+      "disturbance": 0.0,
+      "phase": 0.25,
+      "Tamb": 23.28499984741211,
+      "Tc": 36.68587875366211,
+      "SpO2": 95.3994369506836
+    },
+    {
+      "scenario": 2,
+      "step": 75,
+      "policy": "ddqn",
+      "disturbance": 0.0,
+      "phase": 0.375,
+      "Tamb": 22.40999984741211,
+      "Tc": 36.987483978271484,
+      "SpO2": 94.88771057128906
+    },
+    {
+      "scenario": 2,
+      "step": 100,
+      "policy": "ddqn",
+      "disturbance": 0.0,
+      "phase": 0.5,
+      "Tamb": 21.53499984741211,
+      "Tc": 36.940879821777344,
+      "SpO2": 94.9521255493164
+    },
+    {
+      "scenario": 2,
+      "step": 125,
+      "policy": "ddqn",
+      "disturbance": 0.0,
+      "phase": 0.625,
+      "Tamb": 20.65999984741211,
+      "Tc": 37.0833740234375,
+      "SpO2": 93.6020278930664
+    },
+    {
+      "scenario": 2,
+      "step": 150,
+      "policy": "ddqn",
+      "disturbance": 0.0,
+      "phase": 0.75,
+      "Tamb": 19.78499984741211,
+      "Tc": 36.82551574707031,
+      "SpO2": 92.01544952392578
+    },
+    {
+      "scenario": 2,
+      "step": 170,
+      "policy": "ddqn",
+      "disturbance": 0.0,
+      "phase": 0.8500000238418579,
+      "Tamb": 19.084999084472656,
+      "Tc": 37.0756950378418,
+      "SpO2": 92.62831115722656
+    },
+    {
+      "scenario": 2,
+      "step": 185,
+      "policy": "ddqn",
+      "disturbance": 0.0,
+      "phase": 0.925000011920929,
+      "Tamb": 18.559999465942383,
+      "Tc": 36.980709075927734,
+      "SpO2": 94.83448791503906
+    },
+    {
+      "scenario": 2,
+      "step": 198,
+      "policy": "ddqn",
+      "disturbance": 0.0,
+      "phase": 0.9900000095367432,
+      "Tamb": 18.104999542236328,
+      "Tc": 37.0506591796875,
+      "SpO2": 94.80741119384766
+    },
+    {
+      "scenario": 3,
+      "step": 15,
+      "policy": "baseline",
+      "disturbance": 0.0,
+      "phase": 0.07500000298023224,
+      "Tamb": 25.0,
+      "Tc": 36.79420471191406,
+      "SpO2": 92.02074432373047
+    },
+    {
+      "scenario": 3,
+      "step": 35,
+      "policy": "baseline",
+      "disturbance": 0.0,
+      "phase": 0.17499999701976776,
+      "Tamb": 25.0,
+      "Tc": 37.031166076660156,
+      "SpO2": 92.00958251953125
+    },
+    {
+      "scenario": 3,
+      "step": 48,
+      "policy": "baseline",
+      "disturbance": 0.0,
+      "phase": 0.23999999463558197,
+      "Tamb": 25.0,
+      "Tc": 37.1642951965332,
+      "SpO2": 92.03063201904297
+    },
+    {
+      "scenario": 3,
+      "step": 55,
+      "policy": "baseline",
+      "disturbance": 1.0,
+      "phase": 0.2750000059604645,
+      "Tamb": 25.0,
+      "Tc": 36.72591018676758,
+      "SpO2": 91.99394989013672
+    },
+    {
+      "scenario": 3,
+      "step": 65,
+      "policy": "baseline",
+      "disturbance": 1.0,
+      "phase": 0.32499998807907104,
+      "Tamb": 25.0,
+      "Tc": 36.85924530029297,
+      "SpO2": 92.02188873291016
+    },
+    {
+      "scenario": 3,
+      "step": 75,
+      "policy": "baseline",
+      "disturbance": 1.0,
+      "phase": 0.375,
+      "Tamb": 25.0,
+      "Tc": 36.76228713989258,
+      "SpO2": 92.01993560791016
+    },
+    {
+      "scenario": 3,
+      "step": 79,
+      "policy": "baseline",
+      "disturbance": 1.0,
+      "phase": 0.39500001072883606,
+      "Tamb": 25.0,
+      "Tc": 36.746578216552734,
+      "SpO2": 91.89775848388672
+    },
+    {
+      "scenario": 3,
+      "step": 85,
+      "policy": "baseline",
+      "disturbance": 0.0,
+      "phase": 0.42500001192092896,
+      "Tamb": 25.0,
+      "Tc": 37.20527648925781,
+      "SpO2": 91.97786712646484
+    },
+    {
+      "scenario": 3,
+      "step": 100,
+      "policy": "baseline",
+      "disturbance": 0.0,
+      "phase": 0.5,
+      "Tamb": 25.0,
+      "Tc": 36.629066467285156,
+      "SpO2": 92.01449584960938
+    },
+    {
+      "scenario": 3,
+      "step": 130,
+      "policy": "baseline",
+      "disturbance": 0.0,
+      "phase": 0.6499999761581421,
+      "Tamb": 25.0,
+      "Tc": 36.70491027832031,
+      "SpO2": 91.99271392822266
+    },
+    {
+      "scenario": 3,
+      "step": 180,
+      "policy": "baseline",
+      "disturbance": 0.0,
+      "phase": 0.8999999761581421,
+      "Tamb": 25.0,
+      "Tc": 37.28675079345703,
+      "SpO2": 92.13549041748047
+    },
+    {
+      "scenario": 3,
+      "step": 15,
+      "policy": "ddqn",
+      "disturbance": 0.0,
+      "phase": 0.07500000298023224,
+      "Tamb": 25.0,
+      "Tc": 36.919273376464844,
+      "SpO2": 94.51573944091797
+    },
+    {
+      "scenario": 3,
+      "step": 35,
+      "policy": "ddqn",
+      "disturbance": 0.0,
+      "phase": 0.17499999701976776,
+      "Tamb": 25.0,
+      "Tc": 36.98915100097656,
+      "SpO2": 94.4583969116211
+    },
+    {
+      "scenario": 3,
+      "step": 48,
+      "policy": "ddqn",
+      "disturbance": 0.0,
+      "phase": 0.23999999463558197,
+      "Tamb": 25.0,
+      "Tc": 36.674224853515625,
+      "SpO2": 93.34664916992188
+    },
+    {
+      "scenario": 3,
+      "step": 55,
+      "policy": "ddqn",
+      "disturbance": 1.0,
+      "phase": 0.2750000059604645,
+      "Tamb": 25.0,
+      "Tc": 36.861785888671875,
+      "SpO2": 93.02506256103516
+    },
+    {
+      "scenario": 3,
+      "step": 65,
+      "policy": "ddqn",
+      "disturbance": 1.0,
+      "phase": 0.32499998807907104,
+      "Tamb": 25.0,
+      "Tc": 37.092777252197266,
+      "SpO2": 94.47146606445312
+    },
+    {
+      "scenario": 3,
+      "step": 75,
+      "policy": "ddqn",
+      "disturbance": 1.0,
+      "phase": 0.375,
+      "Tamb": 25.0,
+      "Tc": 37.26274871826172,
+      "SpO2": 93.59064483642578
+    },
+    {
+      "scenario": 3,
+      "step": 79,
+      "policy": "ddqn",
+      "disturbance": 1.0,
+      "phase": 0.39500001072883606,
+      "Tamb": 25.0,
+      "Tc": 37.213600158691406,
+      "SpO2": 93.1351318359375
+    },
+    {
+      "scenario": 3,
+      "step": 85,
+      "policy": "ddqn",
+      "disturbance": 0.0,
+      "phase": 0.42500001192092896,
+      "Tamb": 25.0,
+      "Tc": 36.9155158996582,
+      "SpO2": 94.3839111328125
+    },
+    {
+      "scenario": 3,
+      "step": 100,
+      "policy": "ddqn",
+      "disturbance": 0.0,
+      "phase": 0.5,
+      "Tamb": 25.0,
+      "Tc": 36.72746658325195,
+      "SpO2": 94.61102294921875
+    },
+    {
+      "scenario": 3,
+      "step": 130,
+      "policy": "ddqn",
+      "disturbance": 0.0,
+      "phase": 0.6499999761581421,
+      "Tamb": 25.0,
+      "Tc": 36.964603424072266,
+      "SpO2": 93.38468170166016
+    },
+    {
+      "scenario": 3,
+      "step": 180,
+      "policy": "ddqn",
+      "disturbance": 0.0,
+      "phase": 0.8999999761581421,
+      "Tamb": 25.0,
+      "Tc": 37.29219436645508,
+      "SpO2": 93.45561218261719
+    },
+    {
+      "scenario": 4,
+      "step": 0,
+      "policy": "baseline",
+      "disturbance": 0.0,
+      "phase": 0.0,
+      "Tamb": 25.0,
+      "Tc": 35.79999923706055,
+      "SpO2": 88.0
+    },
+    {
+      "scenario": 4,
+      "step": 5,
+      "policy": "baseline",
+      "disturbance": 0.0,
+      "phase": 0.02500000037252903,
+      "Tamb": 25.0,
+      "Tc": 37.212928771972656,
+      "SpO2": 92.05094909667969
+    },
+    {
+      "scenario": 4,
+      "step": 12,
+      "policy": "baseline",
+      "disturbance": 0.0,
+      "phase": 0.05999999865889549,
+      "Tamb": 25.0,
+      "Tc": 37.26393127441406,
+      "SpO2": 91.96023559570312
+    },
+    {
+      "scenario": 4,
+      "step": 25,
+      "policy": "baseline",
+      "disturbance": 0.0,
+      "phase": 0.125,
+      "Tamb": 25.0,
+      "Tc": 37.27400207519531,
+      "SpO2": 92.00359344482422
+    },
+    {
+      "scenario": 4,
+      "step": 40,
+      "policy": "baseline",
+      "disturbance": 0.0,
+      "phase": 0.20000000298023224,
+      "Tamb": 25.0,
+      "Tc": 37.09186935424805,
+      "SpO2": 91.96553802490234
+    },
+    {
+      "scenario": 4,
+      "step": 60,
+      "policy": "baseline",
+      "disturbance": 0.0,
+      "phase": 0.30000001192092896,
+      "Tamb": 25.0,
+      "Tc": 36.5892219543457,
+      "SpO2": 91.99640655517578
+    },
+    {
+      "scenario": 4,
+      "step": 85,
+      "policy": "baseline",
+      "disturbance": 0.0,
+      "phase": 0.42500001192092896,
+      "Tamb": 25.0,
+      "Tc": 36.83153533935547,
+      "SpO2": 92.02877044677734
+    },
+    {
+      "scenario": 4,
+      "step": 120,
+      "policy": "baseline",
+      "disturbance": 0.0,
+      "phase": 0.6000000238418579,
+      "Tamb": 25.0,
+      "Tc": 37.13045883178711,
+      "SpO2": 91.99162292480469
+    },
+    {
+      "scenario": 4,
+      "step": 160,
+      "policy": "baseline",
+      "disturbance": 0.0,
+      "phase": 0.800000011920929,
+      "Tamb": 25.0,
+      "Tc": 37.13138198852539,
+      "SpO2": 91.9924087524414
+    },
+    {
+      "scenario": 4,
+      "step": 195,
+      "policy": "baseline",
+      "disturbance": 0.0,
+      "phase": 0.9750000238418579,
+      "Tamb": 25.0,
+      "Tc": 36.77017593383789,
+      "SpO2": 92.040283203125
+    },
+    {
+      "scenario": 4,
+      "step": 0,
+      "policy": "ddqn",
+      "disturbance": 0.0,
+      "phase": 0.0,
+      "Tamb": 25.0,
+      "Tc": 35.79999923706055,
+      "SpO2": 88.0
+    },
+    {
+      "scenario": 4,
+      "step": 5,
+      "policy": "ddqn",
+      "disturbance": 0.0,
+      "phase": 0.02500000037252903,
+      "Tamb": 25.0,
+      "Tc": 36.91787338256836,
+      "SpO2": 93.57268524169922
+    },
+    {
+      "scenario": 4,
+      "step": 12,
+      "policy": "ddqn",
+      "disturbance": 0.0,
+      "phase": 0.05999999865889549,
+      "Tamb": 25.0,
+      "Tc": 36.922203063964844,
+      "SpO2": 94.20328521728516
+    },
+    {
+      "scenario": 4,
+      "step": 25,
+      "policy": "ddqn",
+      "disturbance": 0.0,
+      "phase": 0.125,
+      "Tamb": 25.0,
+      "Tc": 36.98777389526367,
+      "SpO2": 93.90306854248047
+    },
+    {
+      "scenario": 4,
+      "step": 40,
+      "policy": "ddqn",
+      "disturbance": 0.0,
+      "phase": 0.20000000298023224,
+      "Tamb": 25.0,
+      "Tc": 37.00053787231445,
+      "SpO2": 94.7773208618164
+    },
+    {
+      "scenario": 4,
+      "step": 60,
+      "policy": "ddqn",
+      "disturbance": 0.0,
+      "phase": 0.30000001192092896,
+      "Tamb": 25.0,
+      "Tc": 36.8040771484375,
+      "SpO2": 93.74391174316406
+    },
+    {
+      "scenario": 4,
+      "step": 85,
+      "policy": "ddqn",
+      "disturbance": 0.0,
+      "phase": 0.42500001192092896,
+      "Tamb": 25.0,
+      "Tc": 36.90132522583008,
+      "SpO2": 94.43119049072266
+    },
+    {
+      "scenario": 4,
+      "step": 120,
+      "policy": "ddqn",
+      "disturbance": 0.0,
+      "phase": 0.6000000238418579,
+      "Tamb": 25.0,
+      "Tc": 37.22605895996094,
+      "SpO2": 95.1640625
+    },
+    {
+      "scenario": 4,
+      "step": 160,
+      "policy": "ddqn",
+      "disturbance": 0.0,
+      "phase": 0.800000011920929,
+      "Tamb": 25.0,
+      "Tc": 36.75177001953125,
+      "SpO2": 94.42034149169922
+    },
+    {
+      "scenario": 4,
+      "step": 195,
+      "policy": "ddqn",
+      "disturbance": 0.0,
+      "phase": 0.9750000238418579,
+      "Tamb": 25.0,
+      "Tc": 37.38915252685547,
+      "SpO2": 93.8510971069336
+    },
+    {
+      "scenario": 5,
+      "step": 20,
+      "policy": "baseline",
+      "disturbance": 0.0,
+      "phase": 0.10000000149011612,
+      "Tamb": 25.0,
+      "Tc": 36.84846496582031,
+      "SpO2": 92.04478454589844
+    },
+    {
+      "scenario": 5,
+      "step": 40,
+      "policy": "baseline",
+      "disturbance": 0.0,
+      "phase": 0.20000000298023224,
+      "Tamb": 25.0,
+      "Tc": 36.819007873535156,
+      "SpO2": 91.98394012451172
+    },
+    {
+      "scenario": 5,
+      "step": 55,
+      "policy": "baseline",
+      "disturbance": 0.0,
+      "phase": 0.2750000059604645,
+      "Tamb": 25.0,
+      "Tc": 37.15057373046875,
+      "SpO2": 92.1030502319336
+    },
+    {
+      "scenario": 5,
+      "step": 65,
+      "policy": "baseline",
+      "disturbance": 2.0,
+      "phase": 0.32499998807907104,
+      "Tamb": 25.0,
+      "Tc": 36.77385711669922,
+      "SpO2": 91.09858703613281
+    },
+    {
+      "scenario": 5,
+      "step": 75,
+      "policy": "baseline",
+      "disturbance": 2.0,
+      "phase": 0.375,
+      "Tamb": 25.0,
+      "Tc": 37.16512680053711,
+      "SpO2": 90.05738830566406
+    },
+    {
+      "scenario": 5,
+      "step": 90,
+      "policy": "baseline",
+      "disturbance": 2.0,
+      "phase": 0.44999998807907104,
+      "Tamb": 25.0,
+      "Tc": 36.97393798828125,
+      "SpO2": 88.7638168334961
+    },
+    {
+      "scenario": 5,
+      "step": 105,
+      "policy": "baseline",
+      "disturbance": 2.0,
+      "phase": 0.5249999761581421,
+      "Tamb": 25.0,
+      "Tc": 36.71330642700195,
+      "SpO2": 89.37149810791016
+    },
+    {
+      "scenario": 5,
+      "step": 118,
+      "policy": "baseline",
+      "disturbance": 2.0,
+      "phase": 0.5899999737739563,
+      "Tamb": 25.0,
+      "Tc": 36.81193161010742,
+      "SpO2": 91.64969635009766
+    },
+    {
+      "scenario": 5,
+      "step": 125,
+      "policy": "baseline",
+      "disturbance": 0.0,
+      "phase": 0.625,
+      "Tamb": 25.0,
+      "Tc": 36.71062088012695,
+      "SpO2": 92.04640197753906
+    },
+    {
+      "scenario": 5,
+      "step": 150,
+      "policy": "baseline",
+      "disturbance": 0.0,
+      "phase": 0.75,
+      "Tamb": 25.0,
+      "Tc": 37.05580520629883,
+      "SpO2": 92.12029266357422
+    },
+    {
+      "scenario": 5,
+      "step": 190,
+      "policy": "baseline",
+      "disturbance": 0.0,
+      "phase": 0.949999988079071,
+      "Tamb": 25.0,
+      "Tc": 36.765377044677734,
+      "SpO2": 91.96057891845703
+    },
+    {
+      "scenario": 5,
+      "step": 20,
+      "policy": "ddqn",
+      "disturbance": 0.0,
+      "phase": 0.10000000149011612,
+      "Tamb": 25.0,
+      "Tc": 37.03550720214844,
+      "SpO2": 93.78103637695312
+    },
+    {
+      "scenario": 5,
+      "step": 40,
+      "policy": "ddqn",
+      "disturbance": 0.0,
+      "phase": 0.20000000298023224,
+      "Tamb": 25.0,
+      "Tc": 36.77743911743164,
+      "SpO2": 93.19996643066406
+    },
+    {
+      "scenario": 5,
+      "step": 55,
+      "policy": "ddqn",
+      "disturbance": 0.0,
+      "phase": 0.2750000059604645,
+      "Tamb": 25.0,
+      "Tc": 36.76875305175781,
+      "SpO2": 93.66314697265625
+    },
+    {
+      "scenario": 5,
+      "step": 65,
+      "policy": "ddqn",
+      "disturbance": 2.0,
+      "phase": 0.32499998807907104,
+      "Tamb": 25.0,
+      "Tc": 36.934574127197266,
+      "SpO2": 93.34736633300781
+    },
+    {
+      "scenario": 5,
+      "step": 75,
+      "policy": "ddqn",
+      "disturbance": 2.0,
+      "phase": 0.375,
+      "Tamb": 25.0,
+      "Tc": 37.03395080566406,
+      "SpO2": 90.94778442382812
+    },
+    {
+      "scenario": 5,
+      "step": 90,
+      "policy": "ddqn",
+      "disturbance": 2.0,
+      "phase": 0.44999998807907104,
+      "Tamb": 25.0,
+      "Tc": 36.94729232788086,
+      "SpO2": 91.45563507080078
+    },
+    {
+      "scenario": 5,
+      "step": 105,
+      "policy": "ddqn",
+      "disturbance": 2.0,
+      "phase": 0.5249999761581421,
+      "Tamb": 25.0,
+      "Tc": 36.999576568603516,
+      "SpO2": 91.33778381347656
+    },
+    {
+      "scenario": 5,
+      "step": 118,
+      "policy": "ddqn",
+      "disturbance": 2.0,
+      "phase": 0.5899999737739563,
+      "Tamb": 25.0,
+      "Tc": 37.221824645996094,
+      "SpO2": 91.73355865478516
+    },
+    {
+      "scenario": 5,
+      "step": 125,
+      "policy": "ddqn",
+      "disturbance": 0.0,
+      "phase": 0.625,
+      "Tamb": 25.0,
+      "Tc": 37.298004150390625,
+      "SpO2": 93.53012084960938
+    },
+    {
+      "scenario": 5,
+      "step": 150,
+      "policy": "ddqn",
+      "disturbance": 0.0,
+      "phase": 0.75,
+      "Tamb": 25.0,
+      "Tc": 37.37974166870117,
+      "SpO2": 93.67926025390625
+    },
+    {
+      "scenario": 5,
+      "step": 190,
+      "policy": "ddqn",
+      "disturbance": 0.0,
+      "phase": 0.949999988079071,
+      "Tamb": 25.0,
+      "Tc": 37.36679458618164,
+      "SpO2": 93.60008239746094
+    }
+  ],
+  "random_seed": 42,
+  "scenarios_covered": [
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "scenario_sample_counts": {
+    "normal_standard": 16,
+    "ambient_temperature_drop": 20,
+    "porthole_opening_event": 22,
+    "initial_hypothermia": 20,
+    "oxygen_disturbance_desaturation": 22
+  },
+  "disturbance_counts": {
+    "idle_0": 82,
+    "porthole_1": 8,
+    "oxygen_desat_2": 10
+  },
+  "feature_ranges": {
+    "Tc": {
+      "min": 35.79999923706055,
+      "max": 37.49977111816406,
+      "mean": 36.94434356689453
+    },
+    "Tsk": {
+      "min": 35.29999923706055,
+      "max": 36.99977111816406,
+      "mean": 36.44434356689453
+    },
+    "Ta": {
+      "min": 32.340694427490234,
+      "max": 40.0,
+      "mean": 36.68138122558594
+    },
+    "C_O2": {
+      "min": 21.0,
+      "max": 56.36240005493164,
+      "mean": 27.753931045532227
+    },
+    "SpO2": {
+      "min": 88.0,
+      "max": 95.3994369506836,
+      "mean": 92.68193054199219
+    },
+    "Tamb": {
+      "min": 18.104999542236328,
+      "max": 25.0,
+      "mean": 24.241899490356445
+    },
+    "dTa_dt": {
+      "min": -0.12120696157217026,
+      "max": 0.1859077364206314,
+      "mean": -0.01201239600777626
+    },
+    "dC_O2_dt": {
+      "min": -0.7106012105941772,
+      "max": 0.7325494885444641,
+      "mean": -0.003046908415853977
+    },
+    "phase": {
+      "min": 0.0,
+      "max": 0.9900000095367432,
+      "mean": 0.4415000081062317
+    },
+    "disturbance": {
+      "min": 0.0,
+      "max": 2.0,
+      "mean": 0.2800000011920929
+    },
+    "scenario_id": {
+      "min": 0.0,
+      "max": 1.0,
+      "mean": 0.5299999713897705
+    }
+  }
+}

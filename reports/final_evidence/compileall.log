@@ -1,0 +1,2 @@
+python -m compileall -q .
+Exit code 0 | wall time 1.0958702 s

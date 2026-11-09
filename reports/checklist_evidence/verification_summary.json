@@ -1,0 +1,58 @@
+{
+  "verified_at_utc": "2026-11-08T15:28:55.646215+00:00",
+  "protected_original_files": 302,
+  "output_byte_comparisons": {
+    "shap/background_metadata.json": true,
+    "shap/global_attributions.npz": true,
+    "shap/shap_action_contrast.png": true,
+    "shap/shap_feature_importance.png": true,
+    "shap/shap_manifest.json": false,
+    "shap/shap_policy_feature_importance.png": true,
+    "shap/shap_scenario_comparison.png": true,
+    "shap/shap_summary.png": true,
+    "shap/shap_waterfall.png": true,
+    "validation/abnormal_oxygen_results.csv": true,
+    "validation/abnormal_temperature_results.csv": true,
+    "validation/normal_scenario_results.csv": true,
+    "validation/validation_episodes.csv": true,
+    "validation/validation_summary.json": true
+  },
+  "pytest": {
+    "passed": 95,
+    "failed": 0,
+    "skipped": 0,
+    "warnings": 1247,
+    "seconds": 85.01
+  },
+  "commands": {
+    "pytest.log": {
+      "exit_code": 0,
+      "log_modified_utc": "2026-11-08T15:25:27.053888+00:00"
+    },
+    "pip_check.log": {
+      "exit_code": 0,
+      "log_modified_utc": "2026-11-08T15:24:00.377424+00:00"
+    },
+    "environment_checker.log": {
+      "exit_code": 0,
+      "log_modified_utc": "2026-11-08T15:25:01.429982+00:00"
+    },
+    "workflow.log": {
+      "exit_code": 0,
+      "log_modified_utc": "2026-11-08T15:25:59.363194+00:00"
+    },
+    "independent_verifier.log": {
+      "exit_code": 0,
+      "log_modified_utc": "2026-11-08T15:27:36.563802+00:00"
+    },
+    "compileall.log": {
+      "exit_code": 0,
+      "log_modified_utc": "2026-11-08T15:27:51.521985+00:00"
+    },
+    "installer_script.log": {
+      "exit_code": 0,
+      "log_modified_utc": "2026-11-08T15:27:46.683384+00:00"
+    }
+  },
+  "checkpoint_sha256": "823a2ca6988adbf7ddb4a303da82c1134bcff0d18ef8c59ac21f52cc375411ce"
+}

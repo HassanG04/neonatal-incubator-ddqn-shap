@@ -1,0 +1,40 @@
+warnings Counter({'gast/astn.py:23': 1243, 'src/ddqn_agent.py:418': 3, 'utils/env_checker.py:496': 1})
+default_final Exit code 0 | wall time 64.31845 s
+deep_final Exit code 0 | wall time 64.5488508 s
+kernel_final Exit code 0 | wall time 99.587389 s
+skip_final Exit code 0 | wall time 22.1476919 s
+isolated_demo Exit code 0 | wall time 47.8555617 s
+isolated_tests Exit code 0 | wall time 29.9710277 s
+final_tests Exit code 0 | wall time 35.0197903 s
+compileall Exit code 0 | wall time 1.0958702 s
+member02_evaluation Exit code 0 | wall time 23.3351895 s
+kernel_numerics Exit code 0 | wall time 104.4971558 s
+deep_numerics Exit code 0 | wall time 27.7660266 s
+isolated comparisons [('background_metadata.json', True), ('global_attributions.npz', True), ('shap_action_contrast.png', True), ('shap_feature_importance.png', True), ('shap_manifest.json', True), ('shap_policy_feature_importance.png', True), ('shap_scenario_comparison.png', True), ('shap_summary.png', True), ('shap_waterfall.png', True), ('abnormal_oxygen_results.csv', True), ('abnormal_temperature_results.csv', True), ('normal_scenario_results.csv', True), ('validation_episodes.csv', True), ('validation_summary.json', True)]
+input files by extension Counter({'.csv': 146, '.pt': 60, '.png': 53, '.json': 37, '.md': 27, '.py': 20, '.txt': 4, '.yaml': 1})
+Historical PNGs decoded 47
+Historical JSON files parsed 34
+baseline.py 664 ==============================================================================
+ddqn_agent.py 438 ddqn_agent.py -- Double Deep Q-Network agent (with a standard-DQN switch)
+environment.py 1018 ==============================================================================
+evaluate_controllers.py 854 evaluate_controllers.py -- Fair held-out evaluation of Baseline, DDQN, and DQN.
+generate_plots.py 980 ==============================================================================
+q_network.py 229 q_network.py -- Q-network and observation pre-processing for DDQN / DQN
+random_diagnostic.py 561 ==============================================================================
+replay_buffer.py 110 replay_buffer.py -- Capacity-bounded uniform experience replay.
+rl_utils.py 367 rl_utils.py -- Shared helpers for DDQN training and controller evaluation.
+run_simulation.py 637 ==============================================================================
+sensitivity_analysis.py 215 Sensitivity Analysis (V4-04 fix)
+train_ddqn.py 400 train_ddqn.py -- Config-driven Double DQN (or standard DQN) training.
+delivered shap_action_contrast.png (2970, 1620)
+delivered shap_feature_importance.png (2820, 1620)
+delivered shap_policy_feature_importance.png (2820, 1620)
+delivered shap_scenario_comparison.png (3870, 1882)
+delivered shap_summary.png (2362, 1740)
+delivered shap_waterfall.png (2571, 2208)
+kernel shap_action_contrast.png (2970, 1620)
+kernel shap_feature_importance.png (2820, 1620)
+kernel shap_policy_feature_importance.png (2820, 1620)
+kernel shap_scenario_comparison.png (3870, 1882)
+kernel shap_summary.png (2362, 1740)
+kernel shap_waterfall.png (2571, 2208)

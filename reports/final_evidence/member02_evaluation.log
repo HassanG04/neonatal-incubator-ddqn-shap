@@ -1,0 +1,40 @@
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1794141810.225890   30068 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1794141814.648451   30068 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+D:\Projects\Programming\AAST\Term7\selected_topics\proj_7th\src\evaluate_controllers.py:367: Pandas4Warning: The 'lsuffix' and 'rsuffix' keywords in DataFrame.join are deprecated and will be removed in a future version. Use the 'suffixes' keyword instead.
+  joined = mean_by_seed.join(
+WARNING:tensorflow:TensorFlow GPU support is not available on native Windows for TensorFlow >= 2.11. Even if CUDA/cuDNN are installed, GPU will not be used. Please use WSL2 or the TensorFlow-DirectML plugin.
+==================================================================================
+[eval] Held-out test evaluation: 5 scenarios x 5 episodes (25 episodes/controller)
+[eval] Controllers: baseline=1, ddqn_seeds=1 (selected=ddqn_tuned_seed0), dqn_seeds=0 (selected=None)
+==================================================================================
+
+--- Per-Scenario Held-Out Evaluation (mean +/- std) ---
+controller  scenario  total_reward_mean  total_reward_std  tc_mean_abs_err_mean  spo2_mean_band_err_mean  control_effort_mean  survived_mean  episode_length_mean
+  baseline         1            -10.184             0.725                 0.184                    0.000                0.280          1.000              200.000
+  baseline         2            -15.027             1.567                 0.212                    0.000                0.356          1.000              200.000
+  baseline         3            -11.755             0.442                 0.192                    0.000                0.315          1.000              200.000
+  baseline         4            -11.294             0.612                 0.187                    0.000                0.290          1.000              200.000
+  baseline         5            -66.159             0.795                 0.182                    0.323                0.346          1.000              200.000
+      ddqn         1            -25.626             1.476                 0.242                    0.059                0.755          1.000              200.000
+      ddqn         2            -18.472             0.673                 0.183                    0.047                0.788          1.000              200.000
+      ddqn         3            -16.616             0.878                 0.191                    0.025                0.728          1.000              200.000
+      ddqn         4            -16.865             0.472                 0.192                    0.026                0.702          1.000              200.000
+      ddqn         5            -25.707             1.298                 0.176                    0.116                0.770          1.000              200.000
+
+--- Aggregate Across All 5 Scenarios ---
+controller         run_name  n_seeds  total_reward_mean  total_reward_std  seed_return_std  tc_mean_abs_err_mean  spo2_mean_band_err_mean  control_effort_mean  survived_mean
+  baseline        all_seeds        1            -22.884            21.717            0.000                 0.191                    0.065                0.318          1.000
+      ddqn        all_seeds        1            -20.657             4.266            0.000                 0.197                    0.055                0.749          1.000
+ ddqn_seed ddqn_tuned_seed0        1            -20.657             4.266            0.000                 0.197                    0.055                0.749          1.000
+
+--- Paired Differences on Identical (Scenario, Seed) Episodes ---
+         comparison scenario  n_paired_episodes  reward_diff_mean  reward_diff_std  reward_diff_ci95  rl_win_fraction  tc_err_diff_mean  spo2_err_diff_mean  effort_diff_mean
+ddqn_minus_baseline        1                  5           -15.441            1.324             1.297            0.000             0.058               0.059             0.475
+ddqn_minus_baseline        2                  5            -3.445            1.272             1.246            0.000            -0.029               0.047             0.432
+ddqn_minus_baseline        3                  5            -4.861            0.698             0.684            0.000            -0.001               0.025             0.413
+ddqn_minus_baseline        4                  5            -5.571            0.865             0.847            0.000             0.005               0.026             0.412
+ddqn_minus_baseline        5                  5            40.452            1.349             1.322            1.000            -0.006              -0.207             0.423
+ddqn_minus_baseline      all                 25             2.227           19.611             7.846            0.200             0.005              -0.010             0.431
+Exit code 0 | wall time 23.3351895 s

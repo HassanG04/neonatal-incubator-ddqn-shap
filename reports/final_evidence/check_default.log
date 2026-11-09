@@ -1,0 +1,110 @@
+python run_member03.py 
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1794141727.081696   19820 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1794141732.498284   19820 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+================================================================================
+  PROJECT 04 -- MEMBER 03: SHAP EXPLAINABILITY, VALIDATION & INTEGRATION
+  Neonatal Incubator Temperature & Oxygen Regulation (DDQN + SHAP)
+================================================================================
+[*] Checkpoint      : models/ddqn_tuned_seed0/best.pt
+[*] Output Base Dir : outputs/member03
+[*] Episodes / Scn  : 5
+[*] Compute Device  : cpu
+[*] Base Seed       : 42
+[*] SHAP Method     : deep (skip=False)
+================================================================================
+WARNING:tensorflow:5 out of the last 5 calls to <function TFDeep.phi_symbolic.<locals>.grad_graph at 0x000001E1C8897110> triggered tf.function retracing. Tracing is expensive and the excessive number of tracings could be due to (1) creating @tf.function repeatedly in a loop, (2) passing tensors with different shapes, (3) passing Python objects instead of tensors. For (1), please define your @tf.function outside of the loop. For (2), @tf.function has reduce_retracing=True option that can avoid unnecessary retracing. For (3), please refer to https://www.tensorflow.org/guide/function#controlling_retracing and https://www.tensorflow.org/api_docs/python/tf/function for  more details.
+[WARNING] 5 out of the last 5 calls to <function TFDeep.phi_symbolic.<locals>.grad_graph at 0x000001E1C8897110> triggered tf.function retracing. Tracing is expensive and the excessive number of tracings could be due to (1) creating @tf.function repeatedly in a loop, (2) passing tensors with different shapes, (3) passing Python objects instead of tensors. For (1), please define your @tf.function outside of the loop. For (2), @tf.function has reduce_retracing=True option that can avoid unnecessary retracing. For (3), please refer to https://www.tensorflow.org/guide/function#controlling_retracing and https://www.tensorflow.org/api_docs/python/tf/function for  more details.
+WARNING:tensorflow:6 out of the last 6 calls to <function TFDeep.phi_symbolic.<locals>.grad_graph at 0x000001E1C8894CA0> triggered tf.function retracing. Tracing is expensive and the excessive number of tracings could be due to (1) creating @tf.function repeatedly in a loop, (2) passing tensors with different shapes, (3) passing Python objects instead of tensors. For (1), please define your @tf.function outside of the loop. For (2), @tf.function has reduce_retracing=True option that can avoid unnecessary retracing. For (3), please refer to https://www.tensorflow.org/guide/function#controlling_retracing and https://www.tensorflow.org/api_docs/python/tf/function for  more details.
+[WARNING] 6 out of the last 6 calls to <function TFDeep.phi_symbolic.<locals>.grad_graph at 0x000001E1C8894CA0> triggered tf.function retracing. Tracing is expensive and the excessive number of tracings could be due to (1) creating @tf.function repeatedly in a loop, (2) passing tensors with different shapes, (3) passing Python objects instead of tensors. For (1), please define your @tf.function outside of the loop. For (2), @tf.function has reduce_retracing=True option that can avoid unnecessary retracing. For (3), please refer to https://www.tensorflow.org/guide/function#controlling_retracing and https://www.tensorflow.org/api_docs/python/tf/function for  more details.
+
+[PHASE 3] Starting Multi-Scenario Decision Validation...
+[INFO] Loading DDQNAgent from 'models/ddqn_tuned_seed0/best.pt'...
+[INFO] === Processing Validation Group: NORMAL (Scenarios: [1]) ===
+[INFO]   -> Scenario 1 (normal_standard) across 5 held-out test seeds:
+[INFO]      Seed 901000 [Ep 0]: DDQN Ret=-27.25 (Tc Err=0.245C, Switches=191) vs Base Ret=-9.51 (Tc Err=0.178C, Switches=113)
+[INFO]      Seed 901001 [Ep 1]: DDQN Ret=-25.51 (Tc Err=0.234C, Switches=185) vs Base Ret=-10.85 (Tc Err=0.190C, Switches=116)
+[INFO]      Seed 901002 [Ep 2]: DDQN Ret=-27.33 (Tc Err=0.256C, Switches=186) vs Base Ret=-11.22 (Tc Err=0.194C, Switches=112)
+[INFO]      Seed 901003 [Ep 3]: DDQN Ret=-23.73 (Tc Err=0.235C, Switches=189) vs Base Ret=-9.41 (Tc Err=0.178C, Switches=117)
+[INFO]      Seed 901004 [Ep 4]: DDQN Ret=-24.31 (Tc Err=0.241C, Switches=187) vs Base Ret=-9.93 (Tc Err=0.182C, Switches=114)
+[INFO] === Processing Validation Group: ABNORMAL_TEMP (Scenarios: [2, 3, 4]) ===
+[INFO]   -> Scenario 2 (ambient_temperature_drop) across 5 held-out test seeds:
+[INFO]      Seed 902000 [Ep 0]: DDQN Ret=-19.56 (Tc Err=0.187C, Switches=187) vs Base Ret=-16.10 (Tc Err=0.220C, Switches=134)
+[INFO]      Seed 902001 [Ep 1]: DDQN Ret=-17.61 (Tc Err=0.173C, Switches=192) vs Base Ret=-14.27 (Tc Err=0.204C, Switches=132)
+[INFO]      Seed 902002 [Ep 2]: DDQN Ret=-18.78 (Tc Err=0.193C, Switches=187) vs Base Ret=-15.66 (Tc Err=0.218C, Switches=137)
+[INFO]      Seed 902003 [Ep 3]: DDQN Ret=-18.42 (Tc Err=0.180C, Switches=189) vs Base Ret=-16.75 (Tc Err=0.228C, Switches=132)
+[INFO]      Seed 902004 [Ep 4]: DDQN Ret=-17.99 (Tc Err=0.181C, Switches=187) vs Base Ret=-12.35 (Tc Err=0.190C, Switches=113)
+[INFO]   -> Scenario 3 (porthole_opening_event) across 5 held-out test seeds:
+[INFO]      Seed 903000 [Ep 0]: DDQN Ret=-17.71 (Tc Err=0.200C, Switches=186) vs Base Ret=-12.46 (Tc Err=0.198C, Switches=110)
+[INFO]      Seed 903001 [Ep 1]: DDQN Ret=-16.67 (Tc Err=0.194C, Switches=192) vs Base Ret=-12.06 (Tc Err=0.195C, Switches=109)
+[INFO]      Seed 903002 [Ep 2]: DDQN Ret=-17.43 (Tc Err=0.201C, Switches=191) vs Base Ret=-11.46 (Tc Err=0.191C, Switches=109)
+[INFO]      Seed 903003 [Ep 3]: DDQN Ret=-15.79 (Tc Err=0.180C, Switches=187) vs Base Ret=-11.23 (Tc Err=0.193C, Switches=102)
+[INFO]      Seed 903004 [Ep 4]: DDQN Ret=-15.48 (Tc Err=0.182C, Switches=191) vs Base Ret=-11.57 (Tc Err=0.184C, Switches=118)
+[INFO]   -> Scenario 4 (initial_hypothermia) across 5 held-out test seeds:
+[INFO]      Seed 904000 [Ep 0]: DDQN Ret=-16.61 (Tc Err=0.192C, Switches=155) vs Base Ret=-11.13 (Tc Err=0.185C, Switches=118)
+[INFO]      Seed 904001 [Ep 1]: DDQN Ret=-16.79 (Tc Err=0.199C, Switches=188) vs Base Ret=-11.82 (Tc Err=0.192C, Switches=125)
+[INFO]      Seed 904002 [Ep 2]: DDQN Ret=-16.22 (Tc Err=0.184C, Switches=177) vs Base Ret=-11.07 (Tc Err=0.184C, Switches=118)
+[INFO]      Seed 904003 [Ep 3]: DDQN Ret=-17.09 (Tc Err=0.190C, Switches=192) vs Base Ret=-12.10 (Tc Err=0.198C, Switches=110)
+[INFO]      Seed 904004 [Ep 4]: DDQN Ret=-17.62 (Tc Err=0.194C, Switches=180) vs Base Ret=-10.36 (Tc Err=0.178C, Switches=123)
+[INFO] === Processing Validation Group: ABNORMAL_O2 (Scenarios: [5]) ===
+[INFO]   -> Scenario 5 (oxygen_disturbance_desaturation) across 5 held-out test seeds:
+[INFO]      Seed 905000 [Ep 0]: DDQN Ret=-23.27 (Tc Err=0.169C, Switches=182) vs Base Ret=-65.90 (Tc Err=0.181C, Switches=127)
+[INFO]      Seed 905001 [Ep 1]: DDQN Ret=-26.86 (Tc Err=0.172C, Switches=185) vs Base Ret=-66.20 (Tc Err=0.178C, Switches=129)
+[INFO]      Seed 905002 [Ep 2]: DDQN Ret=-26.35 (Tc Err=0.186C, Switches=175) vs Base Ret=-65.13 (Tc Err=0.181C, Switches=126)
+[INFO]      Seed 905003 [Ep 3]: DDQN Ret=-25.52 (Tc Err=0.171C, Switches=176) vs Base Ret=-65.99 (Tc Err=0.192C, Switches=132)
+[INFO]      Seed 905004 [Ep 4]: DDQN Ret=-26.54 (Tc Err=0.180C, Switches=174) vs Base Ret=-67.58 (Tc Err=0.176C, Switches=127)
+[INFO] Saving scenario trajectory CSV files...
+[INFO] Validation complete. Summary saved -> outputs/member03\validation\validation_summary.json
+[INFO] Net DDQN Return vs Baseline: -20.66 vs -22.88 (Net: +2.23)
+
+[PHASE 2] Starting SHAP Explainability Engine...
+[INFO] Background dataset collected: (100, 11) (100 states). Disturbance counts: {'idle_0': 82, 'porthole_1': 8, 'oxygen_desat_2': 10}
+[INFO] Initializing DDQNShapExplainer (requested method='deep')...
+[INFO] Extracting genuine simulation states from actual episode rollouts...
+[INFO] Generating summary beeswarm plot -> outputs/member03\shap\shap_summary.png
+[INFO] Generating action-specific feature importance bar plot -> outputs/member03\shap\shap_feature_importance.png
+[WARNING] findfont: Failed to find font weight semibold for DejaVu Sans, now using 700.
+[INFO] Generating policy-level feature importance bar plot -> outputs/member03\shap\shap_policy_feature_importance.png
+[INFO] Generating individual decision waterfall plot -> outputs/member03\shap\shap_waterfall.png
+[INFO] Generating contrastive action plot (Act 9 vs Act 5) -> outputs/member03\shap\shap_action_contrast.png
+[WARNING] findfont: Failed to find font weight semibold for DejaVu Sans, now using 700.
+[INFO] Generating multi-scenario feature attribution profile -> outputs/member03\shap\shap_scenario_comparison.png
+[INFO] SHAP analysis successfully completed. Manifest stored at 'outputs/member03\shap\shap_manifest.json'.
+
+================================================================================
+  MEMBER 03 WORKFLOW EXECUTION SUMMARY
+================================================================================
+Completed in 54.49 seconds.
+
+Comparative Results (DDQN vs Baseline):
+--------------------------------------------------------------------------------
+Scenario                           | DDQN Return   | Base Return   | Advantage 
+--------------------------------------------------------------------------------
+normal_standard                    |      -25.63  |      -10.18  |    -15.44
+ambient_temperature_drop           |      -18.47  |      -15.03  |     -3.44
+porthole_opening_event             |      -16.62  |      -11.75  |     -4.86
+initial_hypothermia                |      -16.87  |      -11.29  |     -5.57
+oxygen_disturbance_desaturation    |      -25.71  |      -66.16  |    +40.45
+--------------------------------------------------------------------------------
+OVERALL AGGREGATE (All 5 Scenarios) |      -20.66  |      -22.88  |     +2.23
+================================================================================
+
+Generated Deliverables & Artifacts:
+  [Validation CSVs] : outputs/member03\validation/normal_scenario_results.csv
+                     outputs/member03\validation/abnormal_temperature_results.csv
+                     outputs/member03\validation/abnormal_oxygen_results.csv
+                     outputs/member03\validation/validation_episodes.csv
+  [Validation JSON] : outputs/member03\validation/validation_summary.json
+  [SHAP Plots]      : outputs/member03\shap/shap_summary.png
+                     outputs/member03\shap/shap_feature_importance.png
+                     outputs/member03\shap/shap_policy_feature_importance.png
+                     outputs/member03\shap/shap_waterfall.png
+                     outputs/member03\shap/shap_action_contrast.png
+                     outputs/member03\shap/shap_scenario_comparison.png
+  [SHAP Manifest]   : outputs/member03\shap/shap_manifest.json
+  [SHAP Background] : outputs/member03\shap/background_metadata.json
+================================================================================
+Validation and SHAP export completed.
+================================================================================
+Exit code 0 | wall time 70.0897798 s

@@ -1,0 +1,212 @@
+{
+  "created_unix": 1794010213.8536563,
+  "created_iso": "2026-11-07T00:10:13+0000",
+  "git_revision": null,
+  "source_sha256": {
+    "baseline.py": "827935bd574dd258f07a9c0a176faff549f888a4c13bcc9501bd0593b59c1295",
+    "ddqn_agent.py": "4aed6f54ebd8ab212b5473014c742e91169f3e65b1302ceb76c6025eafecf215",
+    "environment.py": "b1b75fc4f48cbe711e8c7b18af7806d6263c1b69adc1e7e2089becd722cc8ab3",
+    "evaluate_controllers.py": "fbcc4edf246ab3a0baf591e4406f607480d1100536816124e8dd637fc843c5a1",
+    "generate_plots.py": "07ac4649d91f692714e28d910a5f5e8bb9953c3247cff1d38e58b0bc11905918",
+    "q_network.py": "898cbccfed326f67a98aabbe827b0461e25b9cd9142cbea7545f176dd1c729d8",
+    "random_diagnostic.py": "0ab5b728283dc8419af66f80f2c2a4c1157f6bf576ab2316b18d2273439768c0",
+    "replay_buffer.py": "8d16560f24ae87827fb3186d548c98b65f41c3870b7b81ade16f76d20d4001fb",
+    "rl_utils.py": "50890bea0e8b4019b16779a26e140855a26f865f5054a095ec32a155c17eea24",
+    "run_simulation.py": "c626938d46ebc59e477fd2826d12c665f0a17927ac7c802b9d064866d37be0df",
+    "sensitivity_analysis.py": "2807670dcac2c1a63f8baf861799ddf2a46bee4a5b1b3cf1f73a42ff2bd92d6c",
+    "train_ddqn.py": "55c166c26b655323e5cbb252339a45e67db89235984c5412454ca5ab1b760d44"
+  },
+  "config_file": "config.yaml",
+  "config_sha256": "377e80775429788b88937786a6616d9d23f2b589c8bfe950ac0f2ed7b88e1973",
+  "config": {
+    "training": {
+      "gamma": 0.99,
+      "lr": "1e-4",
+      "batch_size": 128,
+      "hidden_sizes": [
+        128,
+        128
+      ],
+      "buffer_size": 100000,
+      "warmup_steps": 3000,
+      "total_steps": 100000,
+      "train_freq": 2,
+      "gradient_steps": 1,
+      "target_update": "hard",
+      "target_update_interval": 500,
+      "tau": 0.005,
+      "grad_clip_norm": 10.0,
+      "huber_delta": 1.0,
+      "reward_scale": 0.1,
+      "eps_start": 1.0,
+      "eps_end": 0.01,
+      "eps_decay_steps": 20000,
+      "baseline_guided_prob": 0.0,
+      "scenario_sampling": "balanced",
+      "scenarios": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "eval_interval": 5000,
+      "val_episodes_per_scenario": 3,
+      "log_interval": 250,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "device": "auto",
+      "algo": "ddqn"
+    },
+    "agent": {
+      "gamma": 0.99,
+      "lr": 0.0001,
+      "batch_size": 128,
+      "hidden_sizes": [
+        128,
+        128
+      ],
+      "grad_clip_norm": 10.0,
+      "target_update": "hard",
+      "target_update_interval": 500,
+      "tau": 0.005,
+      "huber_delta": 1.0,
+      "double": true
+    },
+    "normalizer": {
+      "center": [
+        37.0,
+        36.5,
+        34.0,
+        40.5,
+        92.0,
+        22.0,
+        0.0,
+        0.0,
+        0.5,
+        1.0,
+        0.5
+      ],
+      "scale": [
+        1.5,
+        1.5,
+        6.0,
+        19.5,
+        6.0,
+        5.0,
+        0.05000000074505806,
+        0.5,
+        0.5,
+        1.0,
+        0.5
+      ],
+      "clip_value": 5.0,
+      "names": [
+        "Tc",
+        "Tsk",
+        "Ta",
+        "C_O2",
+        "SpO2",
+        "Tamb",
+        "dTa_dt",
+        "dC_O2_dt",
+        "phase",
+        "disturbance",
+        "scenario_id"
+      ]
+    },
+    "run_name": "ddqn_tuned_seed2"
+  },
+  "seeds": {
+    "run_seed": 2,
+    "train_seed_rule": "1_000_000*(run_seed+1)+episode_index",
+    "validation_seed_rule": "500_000+scenario*1000+i",
+    "buffer_seed": 19,
+    "sampler_seed": 33
+  },
+  "device": "/CPU:0",
+  "gpu": null,
+  "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+  "versions": {
+    "python": "3.12.3",
+    "numpy": "1.26.4",
+    "pandas": "2.2.3",
+    "tensorflow": "2.17.0",
+    "gymnasium": "1.4.0",
+    "yaml": "6.0.2",
+    "matplotlib": "3.11.2"
+  },
+  "results": {
+    "env_steps": 100000,
+    "episodes": 1740,
+    "completed_episodes": 1739,
+    "wall_seconds": 307.4507257938385,
+    "steps_per_second": 325.2553713828444,
+    "grad_steps": 48501,
+    "target_syncs": 97,
+    "best_val_return": -19.654677676260796,
+    "best_val_step": 100000,
+    "train_terminated_fraction": 0.7826336975273146,
+    "train_terminated_fraction_last20pct": 0.09482758620689655,
+    "train_terminated_fraction_last20pct_env_steps": 0.12037037037037036,
+    "train_terminated_per_env_step_last20pct": 0.0006507157873661027,
+    "train_causes": {
+      "hyperoxia": 852,
+      "hyperthermia": 464,
+      "max_steps": 378,
+      "hypothermia": 45
+    },
+    "train_causes_last20pct_env_steps": {
+      "max_steps": 95,
+      "hyperoxia": 13
+    },
+    "terminated_last_action_source": {
+      "random": 1331,
+      "greedy": 30
+    },
+    "terminated_last_action_source_last20pct_env_steps": {
+      "random": 11,
+      "greedy": 2
+    },
+    "buffer_scenario_counts": {
+      "1": 19592,
+      "2": 19613,
+      "3": 19896,
+      "4": 20459,
+      "5": 20440
+    },
+    "action_counts": {
+      "0": 17322,
+      "1": 7389,
+      "2": 5030,
+      "3": 5057,
+      "4": 4884,
+      "5": 5585,
+      "6": 3738,
+      "7": 3992,
+      "8": 3468,
+      "9": 2001,
+      "10": 3284,
+      "11": 2419,
+      "12": 2884,
+      "13": 2766,
+      "14": 1784,
+      "15": 6251,
+      "16": 2149,
+      "17": 2272,
+      "18": 2165,
+      "19": 1398,
+      "20": 2734,
+      "21": 2688,
+      "22": 3240,
+      "23": 3078,
+      "24": 2422
+    },
+    "state_size": 11,
+    "action_size": 25
+  },
+  "disclaimer": "Simulation-only academic project; not clinically validated."
+}

@@ -1,0 +1,238 @@
+python -m pytest tests/ -v
+============================= test session starts =============================
+platform win32 -- Python 3.14.6, pytest-9.1.1, pluggy-1.6.0 -- D:\Projects\Programming\AAST\Term7\selected_topics\proj_7th\_final_work\venv\Scripts\python.exe
+cachedir: .pytest_cache
+rootdir: D:\Projects\Programming\AAST\Term7\selected_topics\proj_7th
+plugins: anyio-4.12.1
+collecting ... collected 95 items
+
+tests/test_baseline.py::test_action_in_valid_range PASSED                [  1%]
+tests/test_baseline.py::test_cold_state_selects_high_heater PASSED       [  2%]
+tests/test_baseline.py::test_hot_state_selects_low_heater PASSED         [  3%]
+tests/test_baseline.py::test_low_spo2_selects_higher_fio2 PASSED         [  4%]
+tests/test_baseline.py::test_high_spo2_selects_low_fio2 PASSED           [  5%]
+tests/test_baseline.py::test_normal_state_selects_conservative PASSED    [  6%]
+tests/test_baseline.py::test_reset_clears_pid_state PASSED               [  7%]
+tests/test_baseline.py::test_pid_integrator_accumulates PASSED           [  8%]
+tests/test_baseline.py::test_runs_full_episode_all_scenarios[1] PASSED   [  9%]
+tests/test_baseline.py::test_runs_full_episode_all_scenarios[2] PASSED   [ 10%]
+tests/test_baseline.py::test_runs_full_episode_all_scenarios[3] PASSED   [ 11%]
+tests/test_baseline.py::test_runs_full_episode_all_scenarios[4] PASSED   [ 12%]
+tests/test_baseline.py::test_runs_full_episode_all_scenarios[5] PASSED   [ 13%]
+tests/test_baseline.py::test_baseline_stabilizes_normal_scenario PASSED  [ 14%]
+tests/test_baseline.py::test_custom_3x2_action_grid PASSED               [ 15%]
+tests/test_baseline.py::test_invalid_action_grid_rejected PASSED         [ 16%]
+tests/test_ddqn.py::test_q_network_shapes_and_linear_output[11-25] PASSED [ 17%]
+tests/test_ddqn.py::test_q_network_shapes_and_linear_output[11-6] PASSED [ 18%]
+tests/test_ddqn.py::test_q_network_shapes_and_linear_output[8-12] PASSED [ 20%]
+tests/test_ddqn.py::test_q_network_invalid_dims PASSED                   [ 21%]
+tests/test_ddqn.py::test_observation_normalizer_round_trip_and_bounds PASSED [ 22%]
+tests/test_ddqn.py::test_replay_buffer_empty_small_and_capacity_overwrite PASSED [ 23%]
+tests/test_ddqn.py::test_replay_buffer_sample_dtypes_and_terminated_vs_truncated PASSED [ 24%]
+tests/test_ddqn.py::test_double_dqn_differs_from_standard_dqn_on_artificial_q_values PASSED [ 25%]
+tests/test_ddqn.py::test_bootstrap_mask_terminated_vs_truncated PASSED   [ 26%]
+tests/test_ddqn.py::test_agent_action_selection_and_greedy_determinism PASSED [ 27%]
+tests/test_ddqn.py::test_agent_learn_target_sync_and_checkpoint_round_trip PASSED [ 28%]
+tests/test_ddqn.py::test_linear_epsilon_schedule PASSED                  [ 29%]
+tests/test_ddqn_integration.py::test_all_scenarios_and_actions_with_agent PASSED [ 30%]
+tests/test_ddqn_integration.py::test_train_save_reload_evaluate_cycle PASSED [ 31%]
+tests/test_ddqn_integration.py::test_dynamic_custom_grid_agent PASSED    [ 32%]
+tests/test_environment.py::test_reset_returns_tuple_obs_info PASSED      [ 33%]
+tests/test_environment.py::test_observation_shape_and_dtype PASSED       [ 34%]
+tests/test_environment.py::test_observation_within_bounds[0-1] PASSED    [ 35%]
+tests/test_environment.py::test_observation_within_bounds[0-2] PASSED    [ 36%]
+tests/test_environment.py::test_observation_within_bounds[0-3] PASSED    [ 37%]
+tests/test_environment.py::test_observation_within_bounds[0-5] PASSED    [ 38%]
+tests/test_environment.py::test_observation_within_bounds[42-1] PASSED   [ 40%]
+tests/test_environment.py::test_observation_within_bounds[42-2] PASSED   [ 41%]
+tests/test_environment.py::test_observation_within_bounds[42-3] PASSED   [ 42%]
+tests/test_environment.py::test_observation_within_bounds[42-5] PASSED   [ 43%]
+tests/test_environment.py::test_action_space_size PASSED                 [ 44%]
+tests/test_environment.py::test_step_returns_5_tuple PASSED              [ 45%]
+tests/test_environment.py::test_invalid_action_raises[-1] PASSED         [ 46%]
+tests/test_environment.py::test_invalid_action_raises[25] PASSED         [ 47%]
+tests/test_environment.py::test_invalid_action_raises[100] PASSED        [ 48%]
+tests/test_environment.py::test_invalid_action_raises[-5] PASSED         [ 49%]
+tests/test_environment.py::test_episode_truncates_at_max_steps PASSED    [ 50%]
+tests/test_environment.py::test_all_scenarios_run[1] PASSED              [ 51%]
+tests/test_environment.py::test_all_scenarios_run[2] PASSED              [ 52%]
+tests/test_environment.py::test_all_scenarios_run[3] PASSED              [ 53%]
+tests/test_environment.py::test_all_scenarios_run[4] PASSED              [ 54%]
+tests/test_environment.py::test_all_scenarios_run[5] PASSED              [ 55%]
+tests/test_environment.py::test_reproducibility_with_seed PASSED         [ 56%]
+tests/test_environment.py::test_action_decoding PASSED                   [ 57%]
+tests/test_environment.py::test_info_dict_keys PASSED                    [ 58%]
+tests/test_environment.py::test_get_state_dict PASSED                    [ 60%]
+tests/test_environment.py::test_safety_termination_on_hypothermia PASSED [ 61%]
+tests/test_environment.py::test_safety_termination_on_hyperthermia PASSED [ 62%]
+tests/test_environment.py::test_no_first_step_collapse PASSED            [ 63%]
+tests/test_environment.py::test_markov_property_scenario_id_exposed PASSED [ 64%]
+tests/test_environment.py::test_disturbance_flag_during_porthole PASSED  [ 65%]
+tests/test_environment.py::test_scenario5_desaturation_effect PASSED     [ 66%]
+tests/test_environment.py::test_render_and_close PASSED                  [ 67%]
+tests/test_environment.py::test_obs_names_constant PASSED                [ 68%]
+tests/test_environment.py::test_action_table PASSED                      [ 69%]
+tests/test_environment.py::test_observed_rates_match_realized_change PASSED [ 70%]
+tests/test_environment.py::test_reward_formula_matches_info PASSED       [ 71%]
+tests/test_environment.py::test_config_override PASSED                   [ 72%]
+tests/test_environment.py::test_check_env_passes PASSED                  [ 73%]
+tests/test_environment.py::test_n_scenarios_constant PASSED              [ 74%]
+tests/test_environment.py::test_step_after_terminated PASSED             [ 75%]
+tests/test_environment.py::test_observation_contains_after_reset PASSED  [ 76%]
+tests/test_environment.py::test_scenario_id_feature[1] PASSED            [ 77%]
+tests/test_environment.py::test_scenario_id_feature[3] PASSED            [ 78%]
+tests/test_environment.py::test_scenario_id_feature[5] PASSED            [ 80%]
+tests/test_environment.py::test_desat_offset_is_5 PASSED                 [ 81%]
+tests/test_environment.py::test_config_resolved_dict PASSED              [ 82%]
+tests/test_environment.py::test_instance_params_not_module_globals PASSED [ 83%]
+tests/test_final_workflow.py::test_deep_failure_during_preflight_uses_full_kernel_background PASSED [ 84%]
+tests/test_final_workflow.py::test_failures_during_validation_propagate PASSED [ 85%]
+tests/test_final_workflow.py::test_skip_never_initializes_shap PASSED    [ 86%]
+tests/test_member03.py::test_agent_loading PASSED                        [ 87%]
+tests/test_member03.py::test_feature_ordering_consistency PASSED         [ 88%]
+tests/test_member03.py::test_background_collection_coverage PASSED       [ 89%]
+tests/test_member03.py::test_background_physics_bounds PASSED            [ 90%]
+tests/test_member03.py::test_shap_deep_explainer_efficiency PASSED       [ 91%]
+tests/test_member03.py::test_shap_explain_state_structure PASSED         [ 92%]
+tests/test_member03.py::test_shap_action_difference PASSED               [ 93%]
+tests/test_member03.py::test_validation_state_action_alignment PASSED    [ 94%]
+tests/test_member03.py::test_validation_action_switching_counter PASSED  [ 95%]
+tests/test_member03.py::test_real_simulation_states_physics PASSED       [ 96%]
+tests/test_member03.py::test_generated_artifacts_integrity PASSED        [ 97%]
+tests/test_member03.py::test_shap_method_consistency PASSED              [ 98%]
+tests/test_member03.py::test_skip_shap_workflow PASSED                   [100%]
+
+============================== warnings summary ===============================
+tests/test_ddqn.py: 235 warnings
+tests/test_member03.py: 214 warnings
+  D:\Programs\conda\Lib\site-packages\gast\astn.py:23: DeprecationWarning: Attribute.__init__ got an unexpected keyword argument '___pyct_anno'. Support for arbitrary keyword arguments is deprecated and will be removed in Python 3.15.
+    new_node = cls(
+
+tests/test_ddqn.py: 150 warnings
+tests/test_member03.py: 141 warnings
+  D:\Programs\conda\Lib\site-packages\gast\astn.py:23: DeprecationWarning: Call.__init__ got an unexpected keyword argument '___pyct_anno'. Support for arbitrary keyword arguments is deprecated and will be removed in Python 3.15.
+    new_node = cls(
+
+tests/test_ddqn.py: 16 warnings
+tests/test_member03.py: 56 warnings
+  D:\Programs\conda\Lib\site-packages\gast\astn.py:23: DeprecationWarning: Constant.__init__ got an unexpected keyword argument '___pyct_anno'. Support for arbitrary keyword arguments is deprecated and will be removed in Python 3.15.
+    new_node = cls(
+
+tests/test_ddqn.py: 9 warnings
+tests/test_member03.py: 3 warnings
+  D:\Programs\conda\Lib\site-packages\gast\astn.py:23: DeprecationWarning: keyword.__init__ got an unexpected keyword argument '___pyct_anno'. Support for arbitrary keyword arguments is deprecated and will be removed in Python 3.15.
+    new_node = cls(
+
+tests/test_ddqn.py: 11 warnings
+tests/test_member03.py: 74 warnings
+  D:\Programs\conda\Lib\site-packages\gast\astn.py:23: DeprecationWarning: FunctionDef.__init__ got an unexpected keyword argument '___pyct_anno'. Support for arbitrary keyword arguments is deprecated and will be removed in Python 3.15.
+    new_node = cls(
+
+tests/test_ddqn.py: 20 warnings
+tests/test_member03.py: 162 warnings
+  D:\Programs\conda\Lib\site-packages\gast\astn.py:23: DeprecationWarning: Load.__init__ got an unexpected keyword argument '___pyct_anno'. Support for arbitrary keyword arguments is deprecated and will be removed in Python 3.15.
+    new_node = cls(
+
+tests/test_ddqn.py: 6 warnings
+tests/test_member03.py: 24 warnings
+  D:\Programs\conda\Lib\site-packages\gast\astn.py:23: DeprecationWarning: Tuple.__init__ got an unexpected keyword argument '___pyct_anno'. Support for arbitrary keyword arguments is deprecated and will be removed in Python 3.15.
+    new_node = cls(
+
+tests/test_ddqn.py: 5 warnings
+tests/test_member03.py: 31 warnings
+  D:\Programs\conda\Lib\site-packages\gast\astn.py:23: DeprecationWarning: Expr.__init__ got an unexpected keyword argument '___pyct_anno'. Support for arbitrary keyword arguments is deprecated and will be removed in Python 3.15.
+    new_node = cls(
+
+tests/test_ddqn.py::test_agent_learn_target_sync_and_checkpoint_round_trip
+tests/test_ddqn.py::test_agent_learn_target_sync_and_checkpoint_round_trip
+tests/test_ddqn.py::test_agent_learn_target_sync_and_checkpoint_round_trip
+tests/test_member03.py::test_shap_deep_explainer_efficiency
+tests/test_member03.py::test_shap_deep_explainer_efficiency
+tests/test_member03.py::test_shap_deep_explainer_efficiency
+tests/test_member03.py::test_shap_deep_explainer_efficiency
+tests/test_member03.py::test_shap_deep_explainer_efficiency
+tests/test_member03.py::test_shap_deep_explainer_efficiency
+  D:\Programs\conda\Lib\site-packages\gast\astn.py:23: DeprecationWarning: Subscript.__init__ got an unexpected keyword argument '___pyct_anno'. Support for arbitrary keyword arguments is deprecated and will be removed in Python 3.15.
+    new_node = cls(
+
+tests/test_ddqn.py::test_agent_learn_target_sync_and_checkpoint_round_trip
+tests/test_ddqn.py::test_agent_learn_target_sync_and_checkpoint_round_trip
+tests/test_member03.py::test_shap_deep_explainer_efficiency
+tests/test_member03.py::test_shap_deep_explainer_efficiency
+tests/test_member03.py::test_shap_deep_explainer_efficiency
+tests/test_member03.py::test_shap_deep_explainer_efficiency
+tests/test_member03.py::test_shap_deep_explainer_efficiency
+  D:\Programs\conda\Lib\site-packages\gast\astn.py:23: DeprecationWarning: List.__init__ got an unexpected keyword argument '___pyct_anno'. Support for arbitrary keyword arguments is deprecated and will be removed in Python 3.15.
+    new_node = cls(
+
+tests/test_ddqn.py::test_agent_learn_target_sync_and_checkpoint_round_trip
+tests/test_member03.py::test_shap_deep_explainer_efficiency
+  D:\Programs\conda\Lib\site-packages\gast\astn.py:23: DeprecationWarning: With.__init__ got an unexpected keyword argument '___pyct_anno'. Support for arbitrary keyword arguments is deprecated and will be removed in Python 3.15.
+    new_node = cls(
+
+tests/test_ddqn.py: 10 warnings
+  D:\Programs\conda\Lib\site-packages\gast\astn.py:23: DeprecationWarning: BinOp.__init__ got an unexpected keyword argument '___pyct_anno'. Support for arbitrary keyword arguments is deprecated and will be removed in Python 3.15.
+    new_node = cls(
+
+tests/test_ddqn.py::test_agent_learn_target_sync_and_checkpoint_round_trip
+tests/test_ddqn.py::test_agent_learn_target_sync_and_checkpoint_round_trip
+tests/test_ddqn.py::test_agent_learn_target_sync_and_checkpoint_round_trip
+tests/test_member03.py::test_shap_deep_explainer_efficiency
+tests/test_member03.py::test_shap_deep_explainer_efficiency
+tests/test_member03.py::test_shap_deep_explainer_efficiency
+tests/test_member03.py::test_shap_deep_explainer_efficiency
+  D:\Programs\conda\Lib\site-packages\gast\astn.py:23: DeprecationWarning: Try.__init__ got an unexpected keyword argument '___pyct_anno'. Support for arbitrary keyword arguments is deprecated and will be removed in Python 3.15.
+    new_node = cls(
+
+tests/test_environment.py::test_check_env_passes
+  D:\Programs\conda\Lib\site-packages\gymnasium\utils\env_checker.py:496: UserWarning: [33mWARN: Not able to test alternative render modes due to the environment not having a spec. Try instantiating the environment through `gymnasium.make`[0m
+    logger.warn(
+
+tests/test_final_workflow.py::test_deep_failure_during_preflight_uses_full_kernel_background
+tests/test_final_workflow.py::test_skip_never_initializes_shap
+tests/test_member03.py::test_agent_loading
+  D:\Projects\Programming\AAST\Term7\selected_topics\proj_7th\tests\..\src\ddqn_agent.py:418: DeprecationWarning: numpy.core.numeric is deprecated and has been renamed to numpy._core.numeric. The numpy._core namespace contains private NumPy internals and its use is discouraged, as NumPy internals can change without warning in any release. In practice, most real-world usage of numpy.core is to access functionality in the public NumPy API. If that is the case, use the public NumPy API. If not, you are using NumPy internals. If you would still like to access an internal attribute, use numpy._core.numeric._frombuffer.
+    ckpt = pickle.load(fh)
+
+tests/test_member03.py::test_shap_deep_explainer_efficiency
+  D:\Programs\conda\Lib\site-packages\gast\astn.py:23: DeprecationWarning: Slice.__init__ got an unexpected keyword argument '___pyct_anno'. Support for arbitrary keyword arguments is deprecated and will be removed in Python 3.15.
+    new_node = cls(
+
+tests/test_member03.py: 11 warnings
+  D:\Programs\conda\Lib\site-packages\gast\astn.py:23: DeprecationWarning: Compare.__init__ got an unexpected keyword argument '___pyct_anno'. Support for arbitrary keyword arguments is deprecated and will be removed in Python 3.15.
+    new_node = cls(
+
+tests/test_member03.py::test_shap_deep_explainer_efficiency
+tests/test_member03.py::test_shap_deep_explainer_efficiency
+tests/test_member03.py::test_shap_deep_explainer_efficiency
+  D:\Programs\conda\Lib\site-packages\gast\astn.py:23: DeprecationWarning: ListComp.__init__ got an unexpected keyword argument '___pyct_anno'. Support for arbitrary keyword arguments is deprecated and will be removed in Python 3.15.
+    new_node = cls(
+
+tests/test_member03.py: 12 warnings
+  D:\Programs\conda\Lib\site-packages\gast\astn.py:23: DeprecationWarning: Store.__init__ got an unexpected keyword argument '___pyct_anno'. Support for arbitrary keyword arguments is deprecated and will be removed in Python 3.15.
+    new_node = cls(
+
+tests/test_member03.py: 16 warnings
+  D:\Programs\conda\Lib\site-packages\gast\astn.py:23: DeprecationWarning: Dict.__init__ got an unexpected keyword argument '___pyct_anno'. Support for arbitrary keyword arguments is deprecated and will be removed in Python 3.15.
+    new_node = cls(
+
+tests/test_member03.py::test_shap_deep_explainer_efficiency
+  D:\Programs\conda\Lib\site-packages\gast\astn.py:23: DeprecationWarning: Eq.__init__ got an unexpected keyword argument '___pyct_anno'. Support for arbitrary keyword arguments is deprecated and will be removed in Python 3.15.
+    new_node = cls(
+
+tests/test_member03.py::test_shap_deep_explainer_efficiency
+tests/test_member03.py::test_shap_deep_explainer_efficiency
+tests/test_member03.py::test_shap_deep_explainer_efficiency
+tests/test_member03.py::test_shap_deep_explainer_efficiency
+tests/test_member03.py::test_shap_deep_explainer_efficiency
+tests/test_member03.py::test_shap_deep_explainer_efficiency
+  D:\Programs\conda\Lib\site-packages\gast\astn.py:23: DeprecationWarning: NotIn.__init__ got an unexpected keyword argument '___pyct_anno'. Support for arbitrary keyword arguments is deprecated and will be removed in Python 3.15.
+    new_node = cls(
+
+tests/test_member03.py::test_shap_deep_explainer_efficiency
+  D:\Programs\conda\Lib\site-packages\gast\astn.py:23: DeprecationWarning: In.__init__ got an unexpected keyword argument '___pyct_anno'. Support for arbitrary keyword arguments is deprecated and will be removed in Python 3.15.
+    new_node = cls(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+===================== 95 passed, 1247 warnings in 32.80s ======================
+Exit code 0 | wall time 35.0197903 s
